@@ -56,7 +56,7 @@ class StackedSprite(pygame.sprite.Sprite):
 			sprite_surf.blit(layer, ((75 - layer.get_width() /2), (index * 2) + (75 - layer.get_height() / 2)))
 			
 		outline_coordinates = pygame.mask.from_surface(sprite_surf).outline()
-		pygame.draw.polygon(sprite_surf, PURPLE, outline_coordinates, width=SCALE)
+		pygame.draw.polygon(sprite_surf, BLACK, outline_coordinates, width=SCALE)
 		
 		self.image = pygame.transform.flip(sprite_surf, True, True)
 

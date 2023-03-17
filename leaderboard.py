@@ -11,7 +11,7 @@ class Leaderboard(State):
 		#font
 		self.small_font = pygame.font.Font(FONT, 50)
 		self.big_font = pygame.font.Font(FONT, 70)
-		self.smaller_font = pygame.font.Font(FONT, 30)
+		self.smaller_font = pygame.font.Font(FONT, 20)
 		self.bigger_font = pygame.font.Font(FONT, 40)
 
 		#text boxes
@@ -33,11 +33,19 @@ class Leaderboard(State):
 		
 	def show_list(self):
 		start_height = 10 * SCALE
-		for row in range(10):
+		for row in range(len(LEADERBOARD_DATA)):
+
+			name = str(LEADERBOARD_DATA[row][0]).strip()
+			lap = LEADERBOARD_DATA[row][1]
+			track = LEADERBOARD_DATA[row][2]
+			car = LEADERBOARD_DATA[row][3]
+			if LEADERBOARD_DATA[row][4]:
+				direction = 'reversed'
+
 			self.game.screen.blit(self.grey_box, (HALF_WIDTH - (self.grey_box.get_width()/2), start_height + HEIGHT * 0.075 * row))
 			self.grey_box.set_alpha(self.alpha)
-			if row < 10:
-				self.render_text(f'Name: {LEADERBOARD_DATA[row]} Lap: {LEADERBOARD_DATA[row]}', WHITE, self.smaller_font, (HALF_WIDTH, (self.grey_box.get_height()/2) + start_height + HEIGHT * 0.075 * row))
+			if row < len(LEADERBOARD_DATA):
+				self.render_text(f'Name: {name} Lap: {lap} Track: {track} Car: {car} Direction: {direction}', WHITE, self.smaller_font, (HALF_WIDTH, (self.grey_box.get_height()/2) + start_height + HEIGHT * 0.075 * row))
 			if row == 5 and self.alpha >= 200:
 				self.game.screen.blit(self.white_box, (HALF_WIDTH - (self.grey_box.get_width()/2), start_height + HEIGHT * 0.075 * row))
 				self.render_text(f'Name: {self.game.player_name}', BLACK, self.smaller_font, (HALF_WIDTH, (self.grey_box.get_height()/2) + start_height + HEIGHT * 0.075 * row))

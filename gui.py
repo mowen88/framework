@@ -9,13 +9,13 @@ class GUI:
 		self.scale_factor = 5
 
 		#font
-		self.small_font = pygame.font.Font(FONT, 50)
+		self.small_font = pygame.font.Font(FONT, 48)
 		self.big_font = pygame.font.Font(FONT, 70)
 		self.smaller_font = pygame.font.Font(FONT, 30)
 		self.bigger_font = pygame.font.Font(FONT, 40)
 
 		#text boxes
-		self.box_size = (45 * SCALE, 22 * SCALE)
+		self.box_size = (50 * SCALE, 22 * SCALE)
 		self.grey_box = pygame.Surface(self.box_size)
 		self.grey_box.fill(BLACK)
 		self.grey_box.set_alpha(200)

@@ -24,13 +24,14 @@ class Game():
 		self.font = pygame.font.Font(FONT, 40)
 
 		self.get_leaderboard()
+		print(LEADERBOARD_DATA)
 
 		self.player_name = ''
 		self.name_entry_active = False
 		self.track = 'track_1'
 		self.fastest_lap = None
 		self.total_laps = 1
-		self.reverse_direction = True
+		self.reverse_direction = False
 		self.car_type = 'xjr12'
 
 		self.load_states()
@@ -69,23 +70,6 @@ class Game():
 
 					elif len(self.player_name) < 10:
 						self.player_name += event.unicode
-
-					if event.key == pygame.K_RETURN:
-						self.name_entry_active = False
-						
-						if len(self.player_name) <= 1:
-							self.player_name = '???'
- 
-						new_leaderboard_entry = [self.player_name, self.fastest_lap, self.track, self.car_type, self.reverse_direction]
-						LEADERBOARD_DATA.append(new_leaderboard_entry)
-
-						LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[1])
-						print(LEADERBOARD_DATA)
-
-						with open('leaderboard.csv', 'a') as leaderboard_file:
-							csv.writer(leaderboard_file).writerow(new_leaderboard_entry)
-
-						
 
 			if event.type == pygame.KEYUP:
 				if event.key == pygame.K_RIGHT:
@@ -140,6 +124,9 @@ class Game():
 					LEADERBOARD_DATA.append(row)
 
 		LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[1])
+
+		for index, row in enumerate(LEADERBOARD_DATA):
+			row.insert(0, index)
 
 	def run(self):
 		self.clock.tick(FPS)

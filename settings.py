@@ -10,7 +10,7 @@ FPS = 60
 SCALE = 4
 
 # game fonts
-FONT = 'font/roboto-condensed/RobotoCondensed-Bold.ttf'
+FONT = 'font/JLREmeric-Regular.ttf'
 FONT_2 = 'font/minimal/Minimal.ttf'
 
 # game colours
