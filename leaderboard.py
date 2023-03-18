@@ -38,6 +38,7 @@ class Leaderboard(State):
 			index = LEADERBOARD_DATA[row][0]
 			name = str(LEADERBOARD_DATA[row][1]).strip()
 			lap = LEADERBOARD_DATA[row][2]
+			lap_above = LEADERBOARD_DATA[row-1][2]
 			track = LEADERBOARD_DATA[row][3]
 			car = LEADERBOARD_DATA[row][4]
 			if LEADERBOARD_DATA[row][5]:
@@ -45,13 +46,18 @@ class Leaderboard(State):
 			else:
 				direction = 'Normal'
 
+			for i in lap_above:
+				for j in lap:
+					val = (str(j + i))
+			print(val)
+
 			self.game.screen.blit(self.grey_box, (HALF_WIDTH - (self.grey_box.get_width()/2), start_height + HEIGHT * 0.075 * row))
 			self.grey_box.set_alpha(self.alpha)
 			if row < len(LEADERBOARD_DATA) and self.alpha >= 200:
-				self.render_text(f'Name: {name} Lap: {lap} Track: {track} Car: {car} Direction: {direction}', WHITE, self.smaller_font, (HALF_WIDTH, (self.grey_box.get_height()/2) + start_height + HEIGHT * 0.075 * row))
-			if self.game.player_name in LEADERBOARD_DATA[row]:
+				self.render_text(f'{index}   |   {name}   |   {lap}   |   {car}   |   {direction}', WHITE, self.smaller_font, (HALF_WIDTH, (self.grey_box.get_height()/2) + start_height + HEIGHT * 0.075 * row))
+			if self.game.player_name and self.game.fastest_lap in LEADERBOARD_DATA[row] or row == 0:
 				self.game.screen.blit(self.white_box, (HALF_WIDTH - (self.grey_box.get_width()/2), start_height + HEIGHT * 0.075 * row))
-				self.render_text(f'Name: {index}', BLACK, self.smaller_font, (HALF_WIDTH, (self.grey_box.get_height()/2) + start_height + HEIGHT * 0.075 * row))
+				self.render_text(f'{index}   |   {name}   |   {lap}   |   {car}   |   {direction}', BLACK, self.smaller_font, (HALF_WIDTH, (self.grey_box.get_height()/2) + start_height + HEIGHT * 0.075 * row))
 	
 	def update(self):
 		self.alpha += 5

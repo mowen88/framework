@@ -78,16 +78,24 @@ class NameEntry(State):
 			if len(self.game.player_name) <= 1:
 				self.game.player_name = '???'
 
+
 			new_leaderboard_entry = [self.game.player_name, self.game.fastest_lap, self.game.track, self.game.car_type, self.game.reverse_direction]
 			LEADERBOARD_DATA.append(new_leaderboard_entry)
 
 			LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[1])
 			print(LEADERBOARD_DATA)
 
+
 			with open('leaderboard.csv', 'a') as leaderboard_file:
 				csv.writer(leaderboard_file).writerow(new_leaderboard_entry)
 
-			self.game.get_leaderboard()
+			# number the lap times after sorting for fastest lap, appends number to start of leaderboard entry
+			for index, row in enumerate(LEADERBOARD_DATA):
+				row.insert(0, index + 1)
+
+			LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[2])
+			print(LEADERBOARD_DATA)
+
 		
 			new_state = Leaderboard(self.game)
 			new_state.enter_state()

@@ -24,7 +24,7 @@ class Game():
 		self.font = pygame.font.Font(FONT, 40)
 
 		self.get_leaderboard()
-		print(LEADERBOARD_DATA)
+		# print(LEADERBOARD_DATA)
 
 		self.player_name = ''
 		self.name_entry_active = False
@@ -124,11 +124,8 @@ class Game():
 					LEADERBOARD_DATA.append(row)
 
 		# sorts the leaderboard entries by fastest lap
-		LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[1])
+		LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[2])
 
-		# number the lap times after sorting for fastest lap, appends number to start of leaderboard entry
-		for index, row in enumerate(LEADERBOARD_DATA):
-			row.insert(0, index)
 
 	def run(self):
 		self.clock.tick(FPS)
