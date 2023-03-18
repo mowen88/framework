@@ -7,7 +7,8 @@ class Leaderboard(State):
 		State.__init__(self, game)
 		
 		self.game = game
-
+		self.leaderboard_height = ((HEIGHT * 0.075)  * len(LEADERBOARD_DATA)) - HEIGHT
+		
 		#font
 		self.small_font = pygame.font.Font(FONT, 50)
 		self.big_font = pygame.font.Font(FONT, 70)
@@ -26,13 +27,24 @@ class Leaderboard(State):
 		self.white_box.fill(WHITE)
 		self.white_box_rect = self.white_box.get_rect(center = RES/2)
 
+		# get starting scroll position at point of current players fastest lap
+		self.scroll = self.get_start_scroll_pos()
+
 	def render_text(self, text, colour, font, pos):
 		surf = font.render(str(text), True, colour)
 		rect = surf.get_rect(center = pos)
 		self.game.screen.blit(surf, rect)
+
+	def get_start_scroll_pos(self):
+		for row in range(len(LEADERBOARD_DATA)):
+			if self.game.player_name in LEADERBOARD_DATA[row] and self.game.fastest_lap in LEADERBOARD_DATA[row]:
+				scroll = (HEIGHT * 0.075 * row - HALF_HEIGHT + (self.grey_box.get_height())) *-1
+		
+				return scroll
 		
 	def show_list(self):
-		start_height = 10 * SCALE
+		start_height = 14 * SCALE
+		
 		for row in range(len(LEADERBOARD_DATA)):
 
 			index = LEADERBOARD_DATA[row][0]
@@ -41,25 +53,32 @@ class Leaderboard(State):
 			lap_above = LEADERBOARD_DATA[row-1][2]
 			track = LEADERBOARD_DATA[row][3]
 			car = LEADERBOARD_DATA[row][4]
-			if LEADERBOARD_DATA[row][5]:
-				direction = 'Reversed'
-			else:
-				direction = 'Normal'
+			direction = LEADERBOARD_DATA[row][5]
 
-			for i in lap_above:
-				for j in lap:
-					val = (str(j + i))
-			print(val)
-
-			self.game.screen.blit(self.grey_box, (HALF_WIDTH - (self.grey_box.get_width()/2), start_height + HEIGHT * 0.075 * row))
+			self.game.screen.blit(self.grey_box, (WIDTH * 0.3 - (self.grey_box.get_width()/2), self.scroll + start_height + HEIGHT * 0.075 * row))
 			self.grey_box.set_alpha(self.alpha)
+
 			if row < len(LEADERBOARD_DATA) and self.alpha >= 200:
-				self.render_text(f'{index}   |   {name}   |   {lap}   |   {car}   |   {direction}', WHITE, self.smaller_font, (HALF_WIDTH, (self.grey_box.get_height()/2) + start_height + HEIGHT * 0.075 * row))
-			if self.game.player_name and self.game.fastest_lap in LEADERBOARD_DATA[row] or row == 0:
-				self.game.screen.blit(self.white_box, (HALF_WIDTH - (self.grey_box.get_width()/2), start_height + HEIGHT * 0.075 * row))
-				self.render_text(f'{index}   |   {name}   |   {lap}   |   {car}   |   {direction}', BLACK, self.smaller_font, (HALF_WIDTH, (self.grey_box.get_height()/2) + start_height + HEIGHT * 0.075 * row))
-	
+				self.render_text(f'{index}   |   {name}   |   {lap}   |   {car}   |   {track}', WHITE, self.smaller_font, (WIDTH * 0.3, (self.grey_box.get_height()/2) + self.scroll + start_height + HEIGHT * 0.075 * row))
+			if self.game.player_name in LEADERBOARD_DATA[row] and self.game.fastest_lap in LEADERBOARD_DATA[row] or row == 0:
+				self.game.screen.blit(self.white_box, (WIDTH * 0.3 - (self.grey_box.get_width()/2), self.scroll + start_height + HEIGHT * 0.075 * row))
+				self.render_text(f'{index}   |   {name}   |   {lap}   |   {car}   |   {track}', BLACK, self.smaller_font, (WIDTH * 0.3, (self.grey_box.get_height()/2) + self.scroll + start_height + HEIGHT * 0.075 * row))
+			
+		self.game.screen.blit(self.white_box, (WIDTH * 0.3 - (self.grey_box.get_width()/2), 0))
+		pygame.draw.line(self.game.screen, BLACK, ((WIDTH * 0.3 - (self.grey_box.get_width()/2), self.grey_box.get_height())), ((WIDTH * 0.3 + (self.grey_box.get_width()/2), self.grey_box.get_height())), SCALE//2)
+		self.render_text('Position  |   Name   |   Lap Time   |   Car   |    Track', BLACK, self.smaller_font, (WIDTH * 0.3, (self.grey_box.get_height()/2)))
+
+
+	def scrolling(self):
+		keys = pygame.key.get_pressed()
+
+		if keys[pygame.K_UP] and self.scroll <= 0:
+			self.scroll += HEIGHT * 0.01
+		if keys[pygame.K_DOWN] and self.scroll >= -self.leaderboard_height - (HEIGHT * 0.075):
+			self.scroll -= HEIGHT * 0.01
+
 	def update(self):
+		self.scrolling()
 		self.alpha += 5
 		if self.alpha >= 200:
 			self.alpha = 200
@@ -67,6 +86,9 @@ class Leaderboard(State):
 	def render(self, display):
 		display.fill(WHITE)
 		self.show_list()
+		self.render_text(self.scroll, BLACK, self.big_font, RES/2)
+
+
 		
 		
 		

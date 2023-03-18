@@ -31,8 +31,8 @@ class Game():
 		self.track = 'track_1'
 		self.fastest_lap = None
 		self.total_laps = 1
-		self.reverse_direction = False
-		self.car_type = 'xjr12'
+		self.reverse_direction = True
+		self.car_type = 'i-type'
 
 		self.load_states() 
 
@@ -125,7 +125,6 @@ class Game():
 
 		# sorts the leaderboard entries by fastest lap
 		LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[2])
-
 
 	def run(self):
 		self.clock.tick(FPS)

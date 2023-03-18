@@ -78,13 +78,10 @@ class NameEntry(State):
 			if len(self.game.player_name) <= 1:
 				self.game.player_name = '???'
 
-
 			new_leaderboard_entry = [self.game.player_name, self.game.fastest_lap, self.game.track, self.game.car_type, self.game.reverse_direction]
 			LEADERBOARD_DATA.append(new_leaderboard_entry)
 
 			LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[1])
-			print(LEADERBOARD_DATA)
-
 
 			with open('leaderboard.csv', 'a') as leaderboard_file:
 				csv.writer(leaderboard_file).writerow(new_leaderboard_entry)
