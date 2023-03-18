@@ -34,7 +34,7 @@ class Game():
 		self.reverse_direction = False
 		self.car_type = 'xjr12'
 
-		self.load_states()
+		self.load_states() 
 
 	def create_level(self):
 		new_state = Level(self)
@@ -120,11 +120,13 @@ class Game():
 		with open('leaderboard.csv', mode ='r') as leaderboard_file:
 			leaderboard = csv.reader(leaderboard_file)
 			for index, row in enumerate(leaderboard):
-				if row != []:
+				if row:
 					LEADERBOARD_DATA.append(row)
 
+		# sorts the leaderboard entries by fastest lap
 		LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[1])
 
+		# number the lap times after sorting for fastest lap, appends number to start of leaderboard entry
 		for index, row in enumerate(LEADERBOARD_DATA):
 			row.insert(0, index)
 

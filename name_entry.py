@@ -86,6 +86,8 @@ class NameEntry(State):
 
 			with open('leaderboard.csv', 'a') as leaderboard_file:
 				csv.writer(leaderboard_file).writerow(new_leaderboard_entry)
+
+			self.game.get_leaderboard()
 		
 			new_state = Leaderboard(self.game)
 			new_state.enter_state()
