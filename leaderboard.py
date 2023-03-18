@@ -7,7 +7,14 @@ class Leaderboard(State):
 		State.__init__(self, game)
 		
 		self.game = game
-		self.leaderboard_height = ((HEIGHT * 0.075)  * len(LEADERBOARD_DATA)) - HEIGHT
+		self.track_leaderboard = []
+		self.leaderboard_height = ((HEIGHT * 0.075) * len(LEADERBOARD_DATA)) - HEIGHT
+		
+		for i in range(len(LEADERBOARD_DATA)):
+			if self.game.track in LEADERBOARD_DATA[i]:
+				self.track_leaderboard.append(LEADERBOARD_DATA[i])
+		
+		print(self.track_leaderboard)
 		
 		#font
 		self.small_font = pygame.font.Font(FONT, 50)
@@ -38,15 +45,29 @@ class Leaderboard(State):
 	def get_start_scroll_pos(self):
 		for row in range(len(LEADERBOARD_DATA)):
 			if self.game.player_name in LEADERBOARD_DATA[row] and self.game.fastest_lap in LEADERBOARD_DATA[row]:
-				scroll = (HEIGHT * 0.075 * row - HALF_HEIGHT + (self.grey_box.get_height())) *-1
-		
+				if row > 7 and row <= len(LEADERBOARD_DATA) - 7:
+					scroll = (HEIGHT * 0.075 * row - HALF_HEIGHT + (self.grey_box.get_height())) *-1
+				elif row < 7:
+					scroll = SCALE
+				else:
+					scroll = -self.leaderboard_height - (HEIGHT * 0.075) - SCALE
+
 				return scroll
+
+	def scrolling(self):
+		keys = pygame.key.get_pressed()
+
+		if keys[pygame.K_UP] and self.scroll <= 0:
+			self.scroll += HEIGHT * 0.01
+		if keys[pygame.K_DOWN] and self.scroll >= -self.leaderboard_height - (HEIGHT * 0.075):
+			self.scroll -= HEIGHT * 0.01
+
 		
 	def show_list(self):
 		start_height = 14 * SCALE
 		
 		for row in range(len(LEADERBOARD_DATA)):
-
+			
 			index = LEADERBOARD_DATA[row][0]
 			name = str(LEADERBOARD_DATA[row][1]).strip()
 			lap = LEADERBOARD_DATA[row][2]
@@ -67,15 +88,6 @@ class Leaderboard(State):
 		self.game.screen.blit(self.white_box, (WIDTH * 0.3 - (self.grey_box.get_width()/2), 0))
 		pygame.draw.line(self.game.screen, BLACK, ((WIDTH * 0.3 - (self.grey_box.get_width()/2), self.grey_box.get_height())), ((WIDTH * 0.3 + (self.grey_box.get_width()/2), self.grey_box.get_height())), SCALE//2)
 		self.render_text('Position  |   Name   |   Lap Time   |   Car   |    Track', BLACK, self.smaller_font, (WIDTH * 0.3, (self.grey_box.get_height()/2)))
-
-
-	def scrolling(self):
-		keys = pygame.key.get_pressed()
-
-		if keys[pygame.K_UP] and self.scroll <= 0:
-			self.scroll += HEIGHT * 0.01
-		if keys[pygame.K_DOWN] and self.scroll >= -self.leaderboard_height - (HEIGHT * 0.075):
-			self.scroll -= HEIGHT * 0.01
 
 	def update(self):
 		self.scrolling()

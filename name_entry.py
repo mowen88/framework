@@ -91,8 +91,6 @@ class NameEntry(State):
 				row.insert(0, index + 1)
 
 			LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[2])
-			print(LEADERBOARD_DATA)
-
 		
 			new_state = Leaderboard(self.game)
 			new_state.enter_state()

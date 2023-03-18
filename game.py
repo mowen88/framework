@@ -32,7 +32,7 @@ class Game():
 		self.fastest_lap = None
 		self.total_laps = 1
 		self.reverse_direction = True
-		self.car_type = 'i-type'
+		self.car_type = 'xjr12'
 
 		self.load_states() 
 
