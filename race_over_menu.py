@@ -72,10 +72,10 @@ class RaceOver:
 				self.restart_colour = WHITE
 
 			self.render_text('Continue', self.continue_colour, self.smaller_font, (self.continue_button_rect.center))
-			self.render_text('Restart', self.restart_colour, self.smaller_font, (self.restart_button_rect.center))
+			self.render_text('Retry', self.restart_colour, self.smaller_font, (self.restart_button_rect.center))
 
 
-	def update(self):
+	def update(self, level):
 		
 		self.render_text('Race Over', WHITE, self.bigger_font, (HALF_WIDTH, self.y_pos))
 
@@ -101,7 +101,7 @@ class RaceOver:
 			self.fadeout_alpha += 255//50
 			if self.fadeout_alpha >= 255:
 				if self.state == 'continue':
-					new_state = NameEntry(self.game)
+					new_state = NameEntry(self.game, level)
 					new_state.enter_state()
 				else:
 					self.game.create_level()

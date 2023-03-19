@@ -5,8 +5,8 @@ from state import State
 from camera import Camera
 from entity import StackedSprite
 from timer import Timer
+from pause_menu import PauseMenu
 from gui import GUI
-from leaderboard import Leaderboard
 from particles import Skidmarks, Dust, Shadow
 
 class Level(State):
@@ -15,6 +15,7 @@ class Level(State):
 
 		self.game = game
 		self.friction = 0.4
+		self.paused = False
 
 		#fade surf
 		self.fading = False
@@ -71,9 +72,9 @@ class Level(State):
 		self.all_sprites.add(self.player)
 
 		# import other classes
+		self.pause_menu = PauseMenu(self.game)
 		self.timer = Timer(self.game)
 		self.GUI = GUI(self.game, self)
-		self.leaderboard = Leaderboard(self.game)
 		self.shadow = Shadow(self.game, self, self.floor_layer, (self.player.rect.x, self.player.rect.y + (2* SCALE)))
 
 	def get_player_start_pos_and_angle(self):
@@ -203,11 +204,20 @@ class Level(State):
 		(self.player.speed > 1 and (self.player.speed < 6 and keys[pygame.K_UP])):
 			self.skidmarks = Skidmarks(self.game, self, self.floor_layer, (self.player.rect.centerx, self.player.rect.centery + (2* SCALE)))
 
+	def toggle_pause(self):
+		if ACTIONS['space']:
+			self.timer.stopstart()
+			new_state = PauseMenu(self.game)
+			new_state.enter_state()
+		self.game.reset_keys()
+
 	def update(self):
+
 		self.all_sprites.update()
 		self.floor_layer.update()
 
 		if not self.finished_race:
+			self.toggle_pause()
 			self.player.input()
 
 		self.collide_checkpoints()
@@ -216,15 +226,13 @@ class Level(State):
 		if self.player.collide(self.gravel_trap_mask) != None:
 			self.player.speed *= 0.95
 
-		
-		
 	def render(self, display):
 		
 		display.fill(BLUE)
 		self.all_sprites.offset_draw(self.player)
 		self.game.draw_text(display, str(f'{self.game.clock.get_fps(): .1f}'), ((WHITE)), 40, (HALF_WIDTH /1.5, HEIGHT * 0.9))
-		self.game.draw_text(display, str(self.passed_checkpoints), ((WHITE)), 40, (HALF_WIDTH, HEIGHT * 0.9))
-		self.game.draw_text(display, str(self.anti_cheat_reverse_checkpoints), ((WHITE)), 40, (HALF_WIDTH * 1.5, HEIGHT * 0.9))	
+		self.game.draw_text(display, str(self.game.stack), ((WHITE)), 10, (HALF_WIDTH, HEIGHT * 0.9))
+		#self.game.draw_text(display, str(self.anti_cheat_reverse_checkpoints), ((WHITE)), 40, (HALF_WIDTH * 1.5, HEIGHT * 0.9))	
 		
 		#self.game.draw_text(self.game.screen, str(f"Current Lap: {self.timer.get_elapsed_time()}"), ((WHITE)), 40, (HALF_WIDTH, HALF_HEIGHT / 2))
 

@@ -1,11 +1,16 @@
 from state import State
-from main_menu import MainMenu
+from level import Level
 from settings import *
 #from zone import Zone
 
-class Title(State):
+class MainMenu(State):
 	def __init__(self, game):
 		State.__init__(self, game)
+
+		
+		self.game.player_name = ''
+		LEADERBOARD_DATA.clear()
+		self.game.get_leaderboard()
 
 		#fade surf
 		self.fading = False
@@ -30,14 +35,14 @@ class Title(State):
 	def update(self):
 
 		# fadeout
-		if ACTIONS['space']:
+		if ACTIONS['return']:
 			self.fading = True
 		self.game.reset_keys()	
 
 		if self.fading:
 			self.fadeout_alpha += 255//50
 			if self.fadeout_alpha >= 255:
-				new_state = MainMenu(self.game)
+				new_state = Level(self.game)
 				new_state.enter_state()
 
 		# if actions['return']:
@@ -47,8 +52,9 @@ class Title(State):
 
 	def render(self, display):
 
-		display.fill(BLUE)
-		self.render_text('Press Space', BLACK, self.big_font, RES/2)
+		display.fill(RED)
+		self.render_text('Press Return', BLACK, self.big_font, RES/2)
 		self.game.screen.blit(self.fade_surf, self.fade_rect)
 		self.fade_surf.set_alpha(self.fadeout_alpha)
+		self.game.draw_text(display, str(self.game.stack), ((WHITE)), 5, (HALF_WIDTH, HEIGHT * 0.9))
 

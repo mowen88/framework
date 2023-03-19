@@ -21,7 +21,7 @@ class Game():
 		self.playing = True
  
 		self.stack = []
-		self.font = pygame.font.Font(FONT, 40)
+		self.font = pygame.font.Font(FONT, 10)
 
 		self.get_leaderboard()
 		# print(LEADERBOARD_DATA)
@@ -32,7 +32,7 @@ class Game():
 		self.fastest_lap = None
 		self.total_laps = 1
 		self.reverse_direction = True
-		self.car_type = 'xjr12'
+		self.car_type = 'i-type'
 
 		self.load_states() 
 
@@ -64,7 +64,6 @@ class Game():
 					ACTIONS['backspace'] = True
 
 				if self.name_entry_active:
-
 					if event.key == pygame.K_BACKSPACE:
 						self.player_name = self.player_name[:-1]
 
@@ -78,6 +77,12 @@ class Game():
 					ACTIONS['left'] = False
 				elif event.key == pygame.K_SPACE:
 					ACTIONS['space'] = False
+
+			if event.type == pygame.MOUSEWHEEL:
+       			 if event.y == 1:
+       			 	ACTIONS['scroll_up'] = True
+       			 elif event.y == -1:
+       			 	ACTIONS['scroll_down'] = True
 
 	def reset_keys(self):
 		for key_pressed in ACTIONS:
@@ -127,6 +132,7 @@ class Game():
 		LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[2])
 
 	def run(self):
+		print(self.player_name)
 		self.clock.tick(FPS)
 		self.get_events()
 		#self.get_time()

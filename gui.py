@@ -80,7 +80,7 @@ class GUI:
 			self.level.finished_race = True
 			self.level.player.angle = self.level.player.momentum_direction
 			self.game.fastest_lap = min(self.level.lap_times)
-			self.race_over_menu.update()
+			self.race_over_menu.update(self.level)
 	
 		else:
 			self.render_text(f"Lap {len(self.level.lap_times)+1} of {self.level.total_laps}", WHITE, self.small_font, (((WIDTH * 0.05) - (2 * SCALE)), HEIGHT * 0.3), False)

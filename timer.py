@@ -5,6 +5,8 @@ class Timer:
 	def __init__(self, game):
 		self.game = game
 
+		self.running = True
+
 		self.millisecs = 0
 		self.secs = 0
 		self.mins = 0
@@ -17,15 +19,19 @@ class Timer:
 		self.secs = 0
 		self.mins = 0
 
+	def stopstart(self):
+		self.running = not self.running
+
 	def update(self):
-		self.millisecs += 1/0.06
-		if self.millisecs >= 1000:
-			self.secs += 1
-			self.millisecs = 0
-		if self.secs >= 60:
-			self.mins += 1
-			self.secs = 0
-			
+		if self.running:
+			self.millisecs += 1/0.06
+			if self.millisecs >= 1000:
+				self.secs += 1
+				self.millisecs = 0
+			if self.secs >= 60:
+				self.mins += 1
+				self.secs = 0
+				
 
 
 

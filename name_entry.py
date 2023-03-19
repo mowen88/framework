@@ -4,12 +4,14 @@ from leaderboard import Leaderboard
 from settings import *
 
 class NameEntry(State):
-	def __init__(self, game):
+	def __init__(self, game, level):
 
 		State.__init__(self, game)
 		self.game = game
+		self.level = level
 		self.mx, self.my = (0,0)
 		self.alpha = 0
+		self.track_leaderboard = []
 		self.state = ''
 		self.alpha = 0
 		self.fading = False
@@ -78,10 +80,16 @@ class NameEntry(State):
 			if len(self.game.player_name) <= 1:
 				self.game.player_name = '???'
 
+			for index, entry in enumerate(LEADERBOARD_DATA):
+				if self.game.track in entry:
+					self.track_leaderboard.append(entry)
+
 			new_leaderboard_entry = [self.game.player_name, self.game.fastest_lap, self.game.track, self.game.car_type, self.game.reverse_direction]
 			LEADERBOARD_DATA.append(new_leaderboard_entry)
+			self.track_leaderboard.append(new_leaderboard_entry)
 
 			LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[1])
+			self.track_leaderboard.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[1])
 
 			with open('leaderboard.csv', 'a') as leaderboard_file:
 				csv.writer(leaderboard_file).writerow(new_leaderboard_entry)
@@ -91,8 +99,9 @@ class NameEntry(State):
 				row.insert(0, index + 1)
 
 			LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[2])
-		
-			new_state = Leaderboard(self.game)
+			self.track_leaderboard.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[2])
+
+			new_state = Leaderboard(self.game, self.level, self.track_leaderboard)
 			new_state.enter_state()
 
 		self.game.reset_keys()	
