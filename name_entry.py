@@ -10,7 +10,6 @@ class NameEntry(State):
 		self.game = game
 		self.level = level
 		self.mx, self.my = (0,0)
-		self.alpha = 0
 		self.track_leaderboard = []
 		self.state = ''
 		self.alpha = 0
@@ -34,6 +33,7 @@ class NameEntry(State):
 		self.continue_button_surf.fill(BLACK)
 		self.continue_button_surf.set_alpha(self.alpha)
 		self.continue_button_rect = self.continue_button_surf.get_rect(center = (WIDTH * 0.8, HEIGHT * 0.2))
+		
 		# restart box
 		self.restart_button_surf = self.button_surf
 		self.restart_button_surf.fill(BLACK)

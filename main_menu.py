@@ -8,6 +8,7 @@ class MainMenu(State):
 		State.__init__(self, game)
 
 		
+		
 		self.game.player_name = ''
 		LEADERBOARD_DATA.clear()
 		self.game.get_leaderboard()

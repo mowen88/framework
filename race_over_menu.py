@@ -30,7 +30,6 @@ class RaceOver:
 		# for swipe up text and fade in of buttons
 		self.y_pos = WIDTH + (5 * SCALE)
 		
-
 		# continue box
 		self.button_surf = pygame.Surface((WIDTH * 0.18, HEIGHT * 0.1))
 		self.continue_button_surf = self.button_surf

@@ -11,7 +11,6 @@ class Leaderboard(State):
 		self.track_leaderboard = track_leaderboard
 		self.leaderboard_height = ((HEIGHT * 0.075) * len(self.track_leaderboard)) - HEIGHT
 		self.mx, self.my = (0,0)
-		self.state = ''
 		self.alpha = 0
 
 		#fade surf
@@ -62,9 +61,9 @@ class Leaderboard(State):
 	def get_start_scroll_pos(self):
 		for row in range(len(self.track_leaderboard)):
 			if self.game.player_name in self.track_leaderboard[row] and self.game.fastest_lap in self.track_leaderboard[row]:
-				if row > 7 and row < len(self.track_leaderboard) - 7:
+				if row > 8 and row < len(self.track_leaderboard) - 7:
 					scroll = (HEIGHT * 0.075 * row - HALF_HEIGHT + (self.grey_box.get_height())) *-1
-				elif row < 7:
+				elif row <= 8:
 					scroll = SCALE
 				else:
 					scroll = -self.leaderboard_height - (HEIGHT * 0.075) - SCALE
@@ -75,11 +74,10 @@ class Leaderboard(State):
 		if self.alpha >= 200:
 			self.mx, self.my = pygame.mouse.get_pos()
 
-			if self.continue_button_rect.collidepoint(self.mx, self.my) or self.state == 'continue':
+			if self.continue_button_rect.collidepoint(self.mx, self.my):
 				pygame.draw.rect(display, WHITE, self.continue_button_rect)
 				self.continue_colour = BLACK
 				if pygame.mouse.get_pressed()[0] == 1 and not self.fading:
-					self.state = 'continue'
 					self.fading = True
 
 			else:
@@ -114,6 +112,7 @@ class Leaderboard(State):
 			pygame.draw.line(self.game.screen, BLACK, ((WIDTH * 0.3 - (self.grey_box.get_width()/2), self.grey_box.get_height())), ((WIDTH * 0.3 + (self.grey_box.get_width()/2), self.grey_box.get_height())), SCALE//2)
 			self.render_text('Position  |   Name   |   Lap Time   |   Car   |    Track reversed?', BLACK, self.smaller_font, (WIDTH * 0.3, (self.grey_box.get_height()/2)))
 
+			# render cups for 1st, 2nd and 3rd
 			if row == 0 and self.alpha >= 200:
 				self.game.screen.blit(self.gold, (WIDTH * 0.3 - (self.grey_box.get_width()/2) + (4* SCALE), (self.grey_box.get_height()/SCALE) + self.scroll + start_height + HEIGHT * 0.075 * row))
 				self.game.screen.blit(self.gold, (WIDTH * 0.3 + (self.grey_box.get_width()/2) - (4* SCALE) - self.gold.get_width(), (self.grey_box.get_height()/SCALE) + self.scroll + start_height + HEIGHT * 0.075 * row))

@@ -32,7 +32,7 @@ class Game():
 		self.fastest_lap = None
 		self.total_laps = 1
 		self.reverse_direction = True
-		self.car_type = 'i-type'
+		self.car_type = 'xjr12'
 
 		self.load_states() 
 
@@ -79,10 +79,12 @@ class Game():
 					ACTIONS['space'] = False
 
 			if event.type == pygame.MOUSEWHEEL:
-       			 if event.y == 1:
-       			 	ACTIONS['scroll_up'] = True
-       			 elif event.y == -1:
-       			 	ACTIONS['scroll_down'] = True
+				if event.y == 1:
+					ACTIONS['scroll_up'] = True
+				elif event.y == -1:
+					ACTIONS['scroll_down'] = True
+
+				print(event.y)
 
 	def reset_keys(self):
 		for key_pressed in ACTIONS:
@@ -132,7 +134,6 @@ class Game():
 		LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[2])
 
 	def run(self):
-		print(self.player_name)
 		self.clock.tick(FPS)
 		self.get_events()
 		#self.get_time()

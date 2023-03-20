@@ -7,6 +7,9 @@ class Title(State):
 	def __init__(self, game):
 		State.__init__(self, game)
 
+		self.mx, self.my = (0,0)
+		self.alpha = 0
+
 		#fade surf
 		self.fading = False
 		self.fadeout_alpha = 0
@@ -21,6 +24,32 @@ class Title(State):
 		self.smaller_font = pygame.font.Font(FONT, 30)
 		self.big_font = pygame.font.Font(FONT, 40)
 
+		# continue box
+		self.button_surf = pygame.Surface((WIDTH * 0.18, HEIGHT * 0.1))
+		self.continue_button_surf = self.button_surf
+		self.continue_button_surf.fill(BLACK)
+		self.continue_button_surf.set_alpha(self.alpha)
+		self.continue_button_rect = self.continue_button_surf.get_rect(center = (HALF_WIDTH, HEIGHT * 0.8))
+
+	def hover_and_click(self, display):
+
+		if self.alpha >= 200:
+			self.game.screen.blit(self.continue_button_surf, self.continue_button_rect)
+			self.continue_button_surf.set_alpha(self.alpha)
+			
+			self.mx, self.my = pygame.mouse.get_pos()
+
+			if self.continue_button_rect.collidepoint(self.mx, self.my):
+				pygame.draw.rect(display, WHITE, self.continue_button_rect)
+				self.continue_colour = BLACK
+				if pygame.mouse.get_pressed()[0] == 1 and not self.fading:
+					self.fading = True
+
+			else:
+				self.continue_colour = WHITE
+
+			self.render_text('Start Game', self.continue_colour, self.smaller_font, (self.continue_button_rect.center))
+
 
 	def render_text(self, text, colour, font, pos):
 		surf = font.render(str(text), True, colour)
@@ -28,12 +57,11 @@ class Title(State):
 		self.game.screen.blit(surf, rect)
 
 	def update(self):
+		self.alpha += 5
+		if self.alpha >= 200:
+			self.alpha = 200
 
 		# fadeout
-		if ACTIONS['space']:
-			self.fading = True
-		self.game.reset_keys()	
-
 		if self.fading:
 			self.fadeout_alpha += 255//50
 			if self.fadeout_alpha >= 255:
@@ -48,7 +76,9 @@ class Title(State):
 	def render(self, display):
 
 		display.fill(BLUE)
-		self.render_text('Press Space', BLACK, self.big_font, RES/2)
+
+		self.hover_and_click(self.game.screen)
+		
 		self.game.screen.blit(self.fade_surf, self.fade_rect)
 		self.fade_surf.set_alpha(self.fadeout_alpha)
 
