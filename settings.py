@@ -43,7 +43,7 @@ ATTRIBUTES = {
 CAR_DATA = {
 	'i-type':{'acc': 1.4, 'braking':1.4, 'max_speed': 15, 'grip': 0.1, 'layer_count': 8},
 	'i-type-1':{'acc': 1.4, 'braking':1.4, 'max_speed': 15, 'grip': 0.1, 'layer_count': 8},
-	'car':{'acc': 1.4, 'braking':1.4, 'max_speed': 15, 'grip': 0.1, 'layer_count': 10},
+	'i-pace':{'acc': 1.4, 'braking':1.4, 'max_speed': 15, 'grip': 0.1, 'layer_count': 10},
 	'xjr12':{'acc': 1.6, 'braking':1.8, 'max_speed': 20, 'grip': 0.2, 'layer_count': 8},
 	'car3':{'acc': 1.8, 'braking':1.8, 'max_speed': 18, 'grip': 0.2, 'layer_count': 10},
 	'car4':{'acc': 0.8, 'braking':1, 'max_speed': 12, 'grip': 0.4, 'layer_count': 10}
