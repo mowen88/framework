@@ -1,4 +1,5 @@
 import sys, pygame, csv
+from pygame import mixer
 from operator import itemgetter
 from os import walk
 from settings import *
@@ -9,6 +10,15 @@ class Game():
 	def __init__(self):
 
 		pygame.init()
+
+		#sound
+		mixer.init()
+
+		self.accel_fx = pygame.mixer.Sound('audio/accel.wav')
+		self.decel_fx = pygame.mixer.Sound('audio/decel.wav') 
+
+		self.accel_fx.set_volume(0.1)
+		self.decel_fx.set_volume(0.1)
 
 		self.clock = pygame.time.Clock()
 		# self.time = 0
@@ -84,7 +94,10 @@ class Game():
 				elif event.y == -1:
 					ACTIONS['scroll_down'] = True
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 263c497ea0f4aa6c8c3ce101be01ec2c48499f3d
 	def reset_keys(self):
 		for key_pressed in ACTIONS:
 			ACTIONS[key_pressed] = False
