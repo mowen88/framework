@@ -9,6 +9,7 @@ class Title(State):
 
 		self.mx, self.my = (0,0)
 		self.alpha = 0
+		self.state = ''
 
 		#fade surf
 		self.fading = False
@@ -24,25 +25,28 @@ class Title(State):
 		self.smaller_font = pygame.font.Font(FONT, 30)
 		self.big_font = pygame.font.Font(FONT, 40)
 
-		# continue box
+		# box surfs and text colours
 		self.button_surf = pygame.Surface((WIDTH * 0.18, HEIGHT * 0.1))
+		self.continue_colour = WHITE
+
 		self.continue_button_surf = self.button_surf
 		self.continue_button_surf.fill(BLACK)
 		self.continue_button_surf.set_alpha(self.alpha)
-		self.continue_button_rect = self.continue_button_surf.get_rect(center = (HALF_WIDTH, HEIGHT * 0.8))
+		self.continue_button_rect = self.continue_button_surf.get_rect(center = RES/2)
 
 	def hover_and_click(self, display):
 
 		if self.alpha >= 200:
 			self.game.screen.blit(self.continue_button_surf, self.continue_button_rect)
 			self.continue_button_surf.set_alpha(self.alpha)
-			
+
 			self.mx, self.my = pygame.mouse.get_pos()
 
-			if self.continue_button_rect.collidepoint(self.mx, self.my):
+			if self.continue_button_rect.collidepoint(self.mx, self.my) or self.state == 'Main Menu':
 				pygame.draw.rect(display, WHITE, self.continue_button_rect)
 				self.continue_colour = BLACK
 				if pygame.mouse.get_pressed()[0] == 1 and not self.fading:
+					self.state = 'Main Menu'
 					self.fading = True
 
 			else:
@@ -65,8 +69,9 @@ class Title(State):
 		if self.fading:
 			self.fadeout_alpha += 255//50
 			if self.fadeout_alpha >= 255:
-				new_state = MainMenu(self.game)
-				new_state.enter_state()
+				if self.state == 'Main Menu':
+					new_state = MainMenu(self.game)
+					new_state.enter_state()
 
 		# if actions['return']:
 		# 	new_state = Zone(self.game)
@@ -75,7 +80,7 @@ class Title(State):
 
 	def render(self, display):
 
-		display.fill(BLUE)
+		display.fill(WHITE)
 
 		self.hover_and_click(self.game.screen)
 		

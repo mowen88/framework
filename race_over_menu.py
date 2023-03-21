@@ -48,23 +48,29 @@ class RaceOver:
 		self.game.screen.blit(surf, rect)
 
 	def hover_and_click(self, display):
+
 		mouse = pygame.mouse.get_pressed(num_buttons=5)
 
 		if self.alpha >= 200:
+			self.game.screen.blit(self.continue_button_surf, self.continue_button_rect)
+			self.continue_button_surf.set_alpha(self.alpha)
+			self.game.screen.blit(self.restart_button_surf, self.restart_button_rect)
+			self.restart_button_surf.set_alpha(self.alpha)
+			
 			self.mx, self.my = pygame.mouse.get_pos()
 
-			if self.continue_button_rect.collidepoint(self.mx, self.my) or self.state == 'continue':
+			if self.continue_button_rect.collidepoint(self.mx, self.my) or self.state == 'Continue':
 				pygame.draw.rect(display, WHITE, self.continue_button_rect)
 				self.continue_colour = BLACK
 				if pygame.mouse.get_pressed()[0] == 1 and not self.fading:
-					self.state = 'continue'
+					self.state = 'Continue'
 					self.fading = True
 
-			elif self.restart_button_rect.collidepoint(self.mx, self.my) or self.state == 'restart':
+			elif self.restart_button_rect.collidepoint(self.mx, self.my) or self.state == 'Restart':
 				pygame.draw.rect(display, WHITE, self.restart_button_rect)
 				self.restart_colour = BLACK
 				if pygame.mouse.get_pressed()[0] == 1 and not self.fading:
-					self.state = 'restart'
+					self.state = 'Restart'
 					self.fading = True
 			else:
 				self.continue_colour = WHITE
@@ -84,11 +90,6 @@ class RaceOver:
 			self.alpha += 5
 			if self.alpha >= 200:
 				self.alpha = 200
-
-		self.game.screen.blit(self.continue_button_surf, self.continue_button_rect)
-		self.continue_button_surf.set_alpha(self.alpha)
-		self.game.screen.blit(self.restart_button_surf, self.restart_button_rect)
-		self.restart_button_surf.set_alpha(self.alpha)
 		
 		self.hover_and_click(self.game.screen)
 
@@ -99,7 +100,7 @@ class RaceOver:
 		if self.fading:
 			self.fadeout_alpha += 255//50
 			if self.fadeout_alpha >= 255:
-				if self.state == 'continue':
+				if self.state == 'Continue':
 					new_state = NameEntry(self.game, level)
 					new_state.enter_state()
 				else:

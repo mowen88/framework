@@ -37,7 +37,7 @@ class Leaderboard(State):
 		self.continue_button_surf = self.button_surf
 		self.continue_button_surf.fill(BLACK)
 		self.continue_button_surf.set_alpha(self.alpha)
-		self.continue_button_rect = self.continue_button_surf.get_rect(center = (WIDTH * 0.75, HEIGHT * 0.5))
+		self.continue_button_rect = self.continue_button_surf.get_rect(center = (WIDTH * 0.78, HEIGHT * 0.5))
 
 		#text boxes
 		self.box_size = (180 * SCALE, 13 * SCALE)

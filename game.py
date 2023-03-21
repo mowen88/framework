@@ -32,7 +32,7 @@ class Game():
 		self.fastest_lap = None
 		self.total_laps = 1
 		self.reverse_direction = True
-		self.car_type = 'xjr12'
+		self.car_type = 'i-pace'
 
 		self.load_states() 
 
@@ -84,7 +84,6 @@ class Game():
 				elif event.y == -1:
 					ACTIONS['scroll_down'] = True
 
-				print(event.y)
 
 	def reset_keys(self):
 		for key_pressed in ACTIONS:
