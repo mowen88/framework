@@ -94,10 +94,6 @@ class Game():
 				elif event.y == -1:
 					ACTIONS['scroll_down'] = True
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 263c497ea0f4aa6c8c3ce101be01ec2c48499f3d
 	def reset_keys(self):
 		for key_pressed in ACTIONS:
 			ACTIONS[key_pressed] = False
