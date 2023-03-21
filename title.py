@@ -34,6 +34,9 @@ class Title(State):
 		self.continue_button_surf.set_alpha(self.alpha)
 		self.continue_button_rect = self.continue_button_surf.get_rect(center = RES/2)
 
+		# bg
+		self.bg = self.game.get_image('assets/backgrounds/i-type.png', RES, RES/2)
+
 	def hover_and_click(self, display):
 
 		if self.alpha >= 200:
@@ -80,7 +83,7 @@ class Title(State):
 
 	def render(self, display):
 
-		display.fill(WHITE)
+		display.blit(self.bg[0], self.bg[1])
 
 		self.hover_and_click(self.game.screen)
 		

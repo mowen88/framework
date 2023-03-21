@@ -110,6 +110,12 @@ class Game():
 	def get_time(self):
 		self.time = pygame.time.get_ticks() / 1000
 
+	def get_image(self, path, size, pos):
+		surf = pygame.image.load(path).convert_alpha()
+		surf = pygame.transform.scale(surf, size)
+		rect = surf.get_rect(center = pos)
+		return(surf, rect)
+
 	def load_states(self):
 		self.title_screen = Title(self)
 		self.stack.append(self.title_screen)
