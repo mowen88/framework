@@ -230,12 +230,9 @@ class Level(State):
 		
 		display.fill(BLUE)
 		self.all_sprites.offset_draw(self.player)
-		self.game.draw_text(display, str(f'{self.game.clock.get_fps(): .1f}'), ((WHITE)), 40, (HALF_WIDTH /1.5, HEIGHT * 0.9))
-		self.game.draw_text(display, str(self.game.stack), ((WHITE)), 10, (HALF_WIDTH, HEIGHT * 0.9))
-		#self.game.draw_text(display, str(self.anti_cheat_reverse_checkpoints), ((WHITE)), 40, (HALF_WIDTH * 1.5, HEIGHT * 0.9))	
+		self.game.render_text(str(f'{self.game.clock.get_fps(): .1f}'), RED, self.game.smaller_font, (HALF_WIDTH /1.5, HEIGHT * 0.9))
+		self.game.render_text(str(self.game.stack), LIGHT_BLUE, self.game.smaller_font, (HALF_WIDTH, HEIGHT * 0.9))
 		
-		#self.game.draw_text(self.game.screen, str(f"Current Lap: {self.timer.get_elapsed_time()}"), ((WHITE)), 40, (HALF_WIDTH, HALF_HEIGHT / 2))
-
 		self.GUI.update()
 
 		if self.started_race:

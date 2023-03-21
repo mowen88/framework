@@ -3,12 +3,21 @@ from state import State
 from settings import *
 
 class Leaderboard(State):
-	def __init__(self, game, level, track_leaderboard):
+	def __init__(self, game, level, track_leaderboard, state_from):
 		State.__init__(self, game)
-		
+
+		self.state_from = state_from
 		self.game = game
 		self.level = level
 		self.track_leaderboard = track_leaderboard
+
+		# if self.state_from == 'Name Entry':
+		# 	for row in range(len(self.track_leaderboard)):
+		# 		del self.track_leaderboard[row][0]
+		# 		self.track_leaderboard[row].append(self.game.reverse_direction)
+			
+		# 	self.track_leaderboard.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[2])
+
 		self.leaderboard_height = ((HEIGHT * 0.075) * len(self.track_leaderboard)) - HEIGHT
 		self.mx, self.my = (0,0)
 		self.alpha = 0
@@ -67,8 +76,10 @@ class Leaderboard(State):
 					scroll = SCALE
 				else:
 					scroll = -self.leaderboard_height - (HEIGHT * 0.075) - SCALE
+			else:
+				scroll = 0
 
-				return scroll
+			return scroll
 
 	def hover_and_click(self, display):
 		if self.alpha >= 200:
@@ -150,10 +161,18 @@ class Leaderboard(State):
 		if self.fading:
 			self.fadeout_alpha += 255//50
 			if self.fadeout_alpha >= 255:
-				self.prev_state.exit_state()
-				self.prev_state.exit_state()
-				self.level.exit_state()
-				self.exit_state()
+				if self.state_from == 'Menu':
+					self.exit_state()
+					self.prev_state.exit_state()
+				elif self.state_from == 'Name Entry':
+					self.exit_state()
+					self.prev_state.exit_state()
+					self.prev_state.exit_state()
+					self.level.exit_state()
+
+		self.game.render_text(self.game.stack, PURPLE, self.game.smaller_font, RES/2)
+
+				
 				
 				
 		

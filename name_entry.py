@@ -101,7 +101,7 @@ class NameEntry(State):
 			LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[2])
 			self.track_leaderboard.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[2])
 
-			new_state = Leaderboard(self.game, self.level, self.track_leaderboard)
+			new_state = Leaderboard(self.game, self.level, self.track_leaderboard, 'Name Entry')
 			new_state.enter_state()
 
 		self.game.reset_keys()	

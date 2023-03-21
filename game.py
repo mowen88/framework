@@ -31,7 +31,12 @@ class Game():
 		self.playing = True
  
 		self.stack = []
-		self.font = pygame.font.Font(FONT, 10)
+
+		#font
+		self.small_font = pygame.font.Font(FONT, 50)
+		self.bigger_font = pygame.font.Font(FONT, 70)
+		self.smaller_font = pygame.font.Font(FONT, 30)
+		self.big_font = pygame.font.Font(FONT, 40)
 
 		self.get_leaderboard()
 		# print(LEADERBOARD_DATA)
@@ -136,6 +141,11 @@ class Game():
 		text_surf = self.font.render(text, True, colour, size)
 		text_rect = text_surf.get_rect(center = pos)
 		surf.blit(text_surf, text_rect)
+
+	def render_text(self, text, colour, font, pos):
+		surf = font.render(str(text), True, colour)
+		rect = surf.get_rect(center = pos)
+		self.screen.blit(surf, rect)
 
 	def get_leaderboard(self):
 		with open('leaderboard.csv', mode ='r') as leaderboard_file:

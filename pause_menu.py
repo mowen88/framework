@@ -7,96 +7,77 @@ class PauseMenu(State):
 		State.__init__(self, game)
 
 		self.game = game
-		self.mx, self.my = (0,0)
+	
+		# button conditions, fade in and state
+		self.state = ''
 		self.alpha = 200
 
-		self.continue_colour = WHITE
-		self.restart_colour = WHITE
-		self.main_menu_colour = WHITE
+		# fade out surf
+		self.fading_out = False
+		self.fadeout_alpha = 0
+		self.fade = self.fadeout(WHITE, self.fadeout_alpha)
 
-		#font
-		self.small_font = pygame.font.Font(FONT, 50)
-		self.bigger_font = pygame.font.Font(FONT, 110)
-		self.smaller_font = pygame.font.Font(FONT, 30)
-		self.big_font = pygame.font.Font(FONT, 40)
+	def fadeout(self, colour, alpha):
+		surf = pygame.Surface(RES)
+		surf.fill(colour)
+		surf.set_alpha(alpha)
+		rect = surf.get_rect(center = RES/2)
+		return(surf, rect)
 
-		# continue box
-		self.button_surf = pygame.Surface((WIDTH * 0.18, HEIGHT * 0.1))
-		self.continue_button_surf = self.button_surf
-		self.continue_button_surf.fill(BLACK)
-		self.continue_button_surf.set_alpha(self.alpha)
-		self.continue_button_rect = self.continue_button_surf.get_rect(center = (WIDTH * 0.3, HEIGHT * 0.6))
-		# restart box
-		self.restart_button_surf = self.button_surf
-		self.restart_button_surf.fill(BLACK)
-		self.restart_button_surf.set_alpha(self.alpha)
-		self.restart_button_rect = self.restart_button_surf.get_rect(center = (WIDTH * 0.5, HEIGHT * 0.6))
-		# main menu box
-		self.main_menu_button_surf = self.button_surf
-		self.main_menu_button_surf.fill(BLACK)
-		self.main_menu_button_surf.set_alpha(self.alpha)
-		self.main_menu_button_rect = self.main_menu_button_surf.get_rect(center = (WIDTH * 0.7, HEIGHT * 0.6))
-
-	def render_text(self, text, colour, font, pos):
-		surf = font.render(str(text), True, colour)
+	def render_button(self, state, text_colour, button_colour, hover_colour, pos):
+		surf = pygame.Surface((WIDTH * 0.18, HEIGHT * 0.09))
+		colour = text_colour
+		surf.fill(button_colour)
+		surf.set_alpha(self.alpha)
 		rect = surf.get_rect(center = pos)
 		self.game.screen.blit(surf, rect)
+		self.game.render_text(state, text_colour, self.game.smaller_font, pos)
 
-	def hover_and_click(self, display):
-		mouse = pygame.mouse.get_pressed(num_buttons=5)
+		mx, my = pygame.mouse.get_pos()
 
-		self.mx, self.my = pygame.mouse.get_pos()
+		if self.alpha >= 200:
+			if rect.collidepoint(mx, my) or self.state == state:
+				pygame.draw.rect(self.game.screen, hover_colour, rect)
+				pygame.draw.rect(self.game.screen, button_colour, rect, SCALE//2)
+				self.game.render_text(state, button_colour, self.game.smaller_font, pos)
+				if pygame.mouse.get_pressed()[0] == 1 and not self.fading_out:
+					self.state = state
+					if self.state == 'Main Menu':
+						self.fading_out = True
+					elif self.state == 'Retry':
+						self.prev_state.exit_state()
+						self.exit_state()
+						self.game.create_level()
+					else:
+						self.prev_state.timer.stopstart()
+						self.exit_state()
 
-		if self.continue_button_rect.collidepoint(self.mx, self.my):
-			pygame.draw.rect(display, WHITE, self.continue_button_rect)
-			self.continue_colour = BLACK
-			if pygame.mouse.get_pressed()[0] == 1:
-				self.prev_state.timer.stopstart()
-				self.exit_state()
-
-		elif self.restart_button_rect.collidepoint(self.mx, self.my):
-			pygame.draw.rect(display, WHITE, self.restart_button_rect)
-			self.restart_colour = BLACK
-			if pygame.mouse.get_pressed()[0] == 1:
-				self.prev_state.exit_state()
-				self.exit_state()
-				self.game.create_level()
-
-		elif self.main_menu_button_rect.collidepoint(self.mx, self.my):
-			pygame.draw.rect(display, WHITE, self.main_menu_button_rect)
-			self.main_menu_colour = BLACK
-			if pygame.mouse.get_pressed()[0] == 1:
-				self.prev_state.exit_state()
-				self.prev_state.exit_state()
-				self.exit_state()
-
-
-		else:
-			self.continue_colour = WHITE
-			self.restart_colour = WHITE
-			self.main_menu_colour = WHITE
-
-		self.render_text('Continue', self.continue_colour, self.smaller_font, (self.continue_button_rect.center))
-		self.render_text('Retry', self.restart_colour, self.smaller_font, (self.restart_button_rect.center))
-		self.render_text('Main Menu', self.main_menu_colour, self.smaller_font, (self.main_menu_button_rect.center))
-
-	def update(self):	
+	def unpause(self):
 		if ACTIONS['space']:
 			self.prev_state.timer.stopstart()
 			self.exit_state()
 		self.game.reset_keys()
+				
+	def update(self):	
+		self.unpause()
+
+		if self.fading_out:
+			self.fadeout_alpha += 255//50
+			if self.fadeout_alpha >= 255:
+				self.prev_state.exit_state()
+				self.prev_state.exit_state()
+				self.exit_state()
 
 	def render(self, display):
 		self.prev_state.render(display)
-		display.blit(self.continue_button_surf, self.continue_button_rect)
-		self.continue_button_surf.set_alpha(self.alpha)
 
-		display.blit(self.restart_button_surf, self.restart_button_rect)
-		self.restart_button_surf.set_alpha(self.alpha)
+		self.game.render_text('Paused', WHITE, self.game.bigger_font, (HALF_WIDTH, HEIGHT * 0.3))
 
-		display.blit(self.main_menu_button_surf, self.main_menu_button_rect)
-		self.main_menu_button_surf.set_alpha(self.alpha)
+		self.render_button('Continue', WHITE, BLACK, WHITE, (HALF_WIDTH, HEIGHT * 0.5))
+		self.render_button('Retry', WHITE, BLACK, WHITE, (HALF_WIDTH, HEIGHT * 0.6))
+		self.render_button('Main Menu', WHITE, BLACK, WHITE, (HALF_WIDTH, HEIGHT * 0.7))
+
+		display.blit(self.fade[0], self.fade[1])
+		self.fade[0].set_alpha(self.fadeout_alpha)
 		
-		self.hover_and_click(display)
-
-		self.render_text('Paused', WHITE, self.bigger_font, (HALF_WIDTH, HEIGHT * 0.4))
+		

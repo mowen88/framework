@@ -64,8 +64,6 @@ class StackedSprite(pygame.sprite.Sprite):
 		keys = pygame.key.get_pressed()
 
 		if keys[pygame.K_UP]:
-			self.game.accel_fx.play()
-			self.game.decel_fx.stop()
 			if self.speed > 0:
 				self.speed = min(self.speed + self.acc, self.max_speed)
 
@@ -73,16 +71,12 @@ class StackedSprite(pygame.sprite.Sprite):
 				self.speed = min(self.speed + self.braking, self.max_speed)
 
 		elif keys[pygame.K_DOWN]:
-			self.game.accel_fx.stop()
-			self.game.decel_fx.play()
 			if self.speed > 0:
 				self.speed = max(self.speed - self.braking, -2)
 			else:
 				self.speed = max(self.speed - self.acc, -2)
 		
 		else:
-			self.game.accel_fx.stop()
-			self.game.decel_fx.play()
 			if self.speed > 0:
 				self.speed = max(self.speed - 0.1, 0)
 			elif self.speed < 0:
