@@ -38,7 +38,6 @@ class PauseMenu(State):
 		if self.alpha >= 200:
 			if rect.collidepoint(mx, my) or self.state == state:
 				pygame.draw.rect(self.game.screen, hover_colour, rect)
-				pygame.draw.rect(self.game.screen, button_colour, rect, SCALE//2)
 				self.game.render_text(state, button_colour, self.game.smaller_font, pos)
 				if pygame.mouse.get_pressed()[0] == 1 and not self.fading_out:
 					self.state = state
@@ -71,11 +70,11 @@ class PauseMenu(State):
 	def render(self, display):
 		self.prev_state.render(display)
 
-		self.game.render_text('Paused', WHITE, self.game.bigger_font, (HALF_WIDTH, HEIGHT * 0.3))
+		self.game.render_text('Paused', WHITE, self.game.bigger_font, (HALF_WIDTH, HEIGHT * 0.45))
 
-		self.render_button('Continue', WHITE, BLACK, WHITE, (HALF_WIDTH, HEIGHT * 0.5))
+		self.render_button('Continue', WHITE, BLACK, WHITE, (WIDTH * 0.3, HEIGHT * 0.6))
 		self.render_button('Retry', WHITE, BLACK, WHITE, (HALF_WIDTH, HEIGHT * 0.6))
-		self.render_button('Main Menu', WHITE, BLACK, WHITE, (HALF_WIDTH, HEIGHT * 0.7))
+		self.render_button('Main Menu', WHITE, BLACK, WHITE, (WIDTH * 0.7, HEIGHT * 0.6))
 
 		display.blit(self.fade[0], self.fade[1])
 		self.fade[0].set_alpha(self.fadeout_alpha)

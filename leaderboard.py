@@ -62,6 +62,9 @@ class Leaderboard(State):
 		# get starting scroll position at point of current players fastest lap
 		self.scroll = self.get_start_scroll_pos()
 
+		# background
+		self.background = self.game.get_image('assets/backgrounds/victory.png', RES, RES/2)
+
 	def render_text(self, text, colour, font, pos):
 		surf = font.render(str(text), True, colour)
 		rect = surf.get_rect(center = pos)
@@ -145,7 +148,7 @@ class Leaderboard(State):
 			self.game.reset_keys()
 
 	def render(self, display):
-		display.fill(WHITE)
+		display.blit(self.background[0], self.background[1])
 		
 		self.show_list()
 

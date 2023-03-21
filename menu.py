@@ -72,7 +72,6 @@ class Menu(State):
 		if self.alpha >= 200:
 			if rect.collidepoint(mx, my) or self.state == state:
 				pygame.draw.rect(self.game.screen, hover_colour, rect)
-				pygame.draw.rect(self.game.screen, button_colour, rect, SCALE//2)
 				self.game.render_text(state, button_colour, self.game.smaller_font, pos)
 				if pygame.mouse.get_pressed()[0] == 1 and not self.fading_out:
 					self.state = state
@@ -92,6 +91,8 @@ class Menu(State):
 
 	def render(self, display):
 		display.blit(self.background[0], self.background[1])
+
+		self.game.render_text('Main Menu', WHITE, self.game.bigger_font, (HALF_WIDTH, HEIGHT /4))
 
 		self.render_button('Race', WHITE, BLACK, WHITE, (HALF_WIDTH, HEIGHT * 0.4))
 		self.render_button('Leaderboard', WHITE, BLACK, WHITE, (HALF_WIDTH, HEIGHT * 0.5))

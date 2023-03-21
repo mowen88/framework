@@ -67,6 +67,8 @@ class Title(State):
 	def render(self, display):
 		display.blit(self.background[0], self.background[1])
 
+		self.game.render_text('JLR Racing', PURPLE, self.game.bigger_font, (HALF_WIDTH/2, HEIGHT /3))
+
 		self.render_button('Start Game', WHITE, BLACK, WHITE, (HALF_WIDTH/2, HALF_HEIGHT))
 		
 		display.blit(self.fade[0], self.fade[1])
