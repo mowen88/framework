@@ -32,7 +32,6 @@ class Menu(State):
 		LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[2])
 		self.track_leaderboard.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[2])
 
-		print(self.track_leaderboard)
 
 		# button conditions, fade in and state
 		self.state = ''
@@ -87,7 +86,7 @@ class Menu(State):
 				if self.state == 'Race':
 					self.level.enter_state()
 				if self.state == 'Leaderboard':
-					Leaderboard(self.game, self.level, self.track_leaderboard, 'Menu').enter_state()
+					Leaderboard(self.game, self.level, 'Menu').enter_state()
 
 	def render(self, display):
 		display.blit(self.background[0], self.background[1])
