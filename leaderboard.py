@@ -9,6 +9,7 @@ class Leaderboard(State):
 		self.state_from = state_from
 		self.game = game
 		self.level = level
+		self.track_leaderboard = []
 		
 		# append new leaderboard entry if from name entry state...
 		if self.state_from == 'Name Entry':
@@ -29,7 +30,9 @@ class Leaderboard(State):
 
 		LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[2])
 
-		self.track_leaderboard = LEADERBOARD_DATA
+		for entry in LEADERBOARD_DATA:
+			if self.game.track in entry: 
+				self.track_leaderboard.append(entry)
 		# print(self.track_leaderboard)
 
 		# if self.state_from == 'Name Entry':
@@ -162,9 +165,9 @@ class Leaderboard(State):
 		self.alpha += 5
 		if self.alpha >= 200:
 			self.alpha = 200
-			if ACTIONS['scroll_up'] and self.scroll <= 0:
+			if (ACTIONS['scroll_up'] or ACTIONS['up']) and self.scroll <= 0:
 				self.scroll += HEIGHT * 0.05
-			if ACTIONS['scroll_down'] and self.scroll >= -self.leaderboard_height - (HEIGHT * 0.075):
+			if (ACTIONS['scroll_down'] or ACTIONS['down']) and self.scroll >= -self.leaderboard_height - (HEIGHT * 0.075):
 				self.scroll -= HEIGHT * 0.05
 			self.game.reset_keys()
 

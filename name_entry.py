@@ -1,4 +1,4 @@
-import pygame, csv
+import pygame, csv, re
 from state import State
 from leaderboard import Leaderboard
 from settings import *
@@ -13,28 +13,8 @@ class NameEntry(State):
 		self.state = ''
 		self.alpha = 0
 		self.fading = False
+		self.no_name_entered = False
 
-		self.track_leaderboard = []
-
-
-		# new_leaderboard_entry = [self.game.player_name, self.game.fastest_lap, self.game.track, self.game.car_type, self.game.reverse_direction]
-		# LEADERBOARD_DATA.append(new_leaderboard_entry)
-		# self.track_leaderboard.append(new_leaderboard_entry)
-
-		# LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[1])
-		# self.track_leaderboard.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[1])
-
-		# with open('leaderboard.csv', 'a') as leaderboard_file:
-		# 	csv.writer(leaderboard_file).writerow(new_leaderboard_entry)
-
-		# # number the lap times after sorting for fastest lap, appends number to start of leaderboard entry
-		# for index, row in enumerate(LEADERBOARD_DATA):
-		# 	row.insert(0, index + 1)
-
-		# LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[2])
-		# self.track_leaderboard.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[2])
-
-		
 		#font
 		self.small_font = pygame.font.Font(FONT, 50)
 		self.big_font = pygame.font.Font(FONT, 70)
@@ -93,15 +73,20 @@ class NameEntry(State):
 		self.game.screen.blit(surf, rect)
 
 	def update(self):
+		self.game.player_name = re.sub(r"^\s+", "", self.game.player_name, flags=re.UNICODE)
+		
+		if self.game.player_name != '':
+			self.no_name_entered = False
 
 		if ACTIONS['return']:
-			self.game.name_entry_active = False
-						
-			if len(self.game.player_name) <= 1:
-				self.game.player_name = '???'
+			if self.game.player_name == '':
+				self.no_name_entered = True
+			else:
+				self.game.name_entry_active = False
 
-			new_state = Leaderboard(self.game, self.level, 'Name Entry')
-			new_state.enter_state()
+				# pass 'name entry' to leaderboard so it can append and show the new entry
+				new_state = Leaderboard(self.game, self.level, 'Name Entry')
+				new_state.enter_state()
 
 		self.game.reset_keys()	
 
@@ -119,4 +104,6 @@ class NameEntry(State):
 		self.render_text('Enter your name', WHITE, self.small_font, (HALF_WIDTH, self.box_rect.top + self.box_surf.get_height()*0.33))
 		pygame.draw.line(self.game.screen, WHITE, (HALF_WIDTH - 30 * SCALE, self.box_rect.top + self.box_surf.get_height()*0.75), (HALF_WIDTH + 30 * SCALE, self.box_rect.top + self.box_surf.get_height()*0.75), SCALE)
 
+		if self.no_name_entered:
+			self.render_text('Enter a name!', PINK, self.small_font, (HALF_WIDTH, self.box_rect.top + self.box_surf.get_height()*0.9))
 

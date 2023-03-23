@@ -46,7 +46,7 @@ class Game():
 		self.track = 'track_1'
 		self.fastest_lap = None
 		self.total_laps = 1
-		self.reverse_direction = True
+		self.reverse_direction = False
 		self.car_type = 'xjr13'
 
 		self.load_states() 
@@ -67,6 +67,10 @@ class Game():
 					self.running = False
 					self.playing = False
 
+				elif event.key == pygame.K_UP:
+					ACTIONS['up'] = True
+				elif event.key == pygame.K_DOWN:
+					ACTIONS['down'] = True
 				elif event.key == pygame.K_RIGHT:
 					ACTIONS['right'] = True
 				elif event.key == pygame.K_LEFT:
@@ -86,6 +90,10 @@ class Game():
 						self.player_name += event.unicode
 
 			if event.type == pygame.KEYUP:
+				if event.key == pygame.K_UP:
+					ACTIONS['up'] = False
+				elif event.key == pygame.K_DOWN:
+					ACTIONS['down'] = False
 				if event.key == pygame.K_RIGHT:
 					ACTIONS['right'] = False
 				elif event.key == pygame.K_LEFT:

@@ -31,7 +31,7 @@ MAGENTA = ((153, 60, 139))
 YELLOW = ((224, 225, 146))
 
 # key events
-ACTIONS = {'escape': True, 'space': False, 'left': False, 'right': False, 'return': False, 'left_click': False, 'right_click': False, 'scroll_up': False, 'scroll_down': False}
+ACTIONS = {'escape': True, 'space': False, 'up': False, 'down': False, 'left': False, 'right': False, 'return': False, 'left_click': False, 'right_click': False, 'scroll_up': False, 'scroll_down': False}
 
 ATTRIBUTES = {
 	'car':{'path':'assets/stacked_sprites/car.png',
