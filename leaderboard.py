@@ -10,41 +10,10 @@ class Leaderboard(State):
 		self.game = game
 		self.level = level
 		self.track_leaderboard = []
+		self.alpha = 0
 		
 		# append new leaderboard entry if from name entry state...
-		if self.state_from == 'Name Entry':
-			new_leaderboard_entry = [self.game.player_name, self.game.fastest_lap, self.game.track, self.game.car_type, self.game.reverse_direction]
-			LEADERBOARD_DATA.append(new_leaderboard_entry)
-
-			with open('leaderboard.csv', 'a') as leaderboard_file:
-				csv.writer(leaderboard_file).writerow(new_leaderboard_entry)
-
-		for row in LEADERBOARD_DATA:
-			if len(row) >= 6:
-				del row[0]
-
-		LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[1])
-
-		for index, row in enumerate(LEADERBOARD_DATA):
-			row.insert(0, index + 1)
-
-		LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[2])
-
-		for entry in LEADERBOARD_DATA:
-			if self.game.track in entry: 
-				self.track_leaderboard.append(entry)
-		# print(self.track_leaderboard)
-
-		# if self.state_from == 'Name Entry':
-		# 	for row in range(len(self.track_leaderboard)):
-		# 		del self.track_leaderboard[row][0]
-		# 		self.track_leaderboard[row].append(self.game.reverse_direction)
-			
-		# 	self.track_leaderboard.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[2])
-
-		self.leaderboard_height = ((HEIGHT * 0.075) * len(self.track_leaderboard)) - HEIGHT
-		self.mx, self.my = (0,0)
-		self.alpha = 0
+		self.get_leaderboard()
 
 		#fade surf
 		self.fading = False
@@ -87,7 +56,32 @@ class Leaderboard(State):
 		self.scroll = self.get_start_scroll_pos()
 
 		# background
-		self.background = self.game.get_image('assets/backgrounds/i-pace.png', RES, RES/2)
+		self.background = self.game.get_image('assets/backgrounds/victory.png', RES, RES/2)
+
+	def get_leaderboard(self):
+		if self.state_from == 'Name Entry':
+			new_leaderboard_entry = [self.game.player_name, self.game.fastest_lap, self.game.track, self.game.car_type, self.game.reverse_direction]
+			LEADERBOARD_DATA.append(new_leaderboard_entry)
+
+			with open('leaderboard.csv', 'a') as leaderboard_file:
+				csv.writer(leaderboard_file).writerow(new_leaderboard_entry)
+
+		for row in LEADERBOARD_DATA:
+			if len(row) >= 6:
+				del row[0]
+
+		LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[1])
+
+		for index, row in enumerate(LEADERBOARD_DATA):
+			row.insert(0, index + 1)
+
+		LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[2])
+
+		for entry in LEADERBOARD_DATA:
+			if self.game.track in entry: 
+				self.track_leaderboard.append(entry)
+
+		self.leaderboard_height = ((HEIGHT * 0.075) * len(self.track_leaderboard)) - HEIGHT
 
 	def render_text(self, text, colour, font, pos):
 		surf = font.render(str(text), True, colour)

@@ -162,8 +162,6 @@ class Game():
 				if row:
 					LEADERBOARD_DATA.append(row)
 
-		# sorts the leaderboard entries by fastest lap
-		LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[2])
 
 	def run(self):
 		self.clock.tick(FPS)
