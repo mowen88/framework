@@ -1,5 +1,6 @@
 import pygame, csv
 from state import State
+from entity import StackedSprite
 from settings import *
 
 class Leaderboard(State):
@@ -10,10 +11,8 @@ class Leaderboard(State):
 		self.game = game
 		self.level = level
 		self.track_leaderboard = []
+		self.scroll = 0
 		
-		# append new leaderboard entry if from name entry state...
-		self.get_leaderboard()
-
 		# button conditions, fade in and state
 		self.state = ''
 		self.alpha = 0
@@ -39,12 +38,13 @@ class Leaderboard(State):
 		self.white_box.fill(WHITE)
 		self.white_box_rect = self.white_box.get_rect(center = RES/2)
 
-
-		# get starting scroll position at point of current players fastest lap
-		self.scroll = self.get_start_scroll_pos()
+		# append new leaderboard entry if from name entry state...
+		self.get_leaderboard()
 
 		# background
 		self.background = self.game.get_image('assets/backgrounds/victory.png', RES, RES/2)
+
+		self.car = StackedSprite(self.game, self.level, self.game.car_type, (WIDTH * 0.75, HALF_HEIGHT), 90)
 
 	def fadein(self):
 		self.alpha += 5
@@ -83,31 +83,26 @@ class Leaderboard(State):
 
 		self.leaderboard_height = ((HEIGHT * 0.075) * len(self.track_leaderboard)) - HEIGHT
 
-	def get_start_scroll_pos(self):
+		# start scroll position where the player is positioned
 		for row in range(len(self.track_leaderboard)):
-			name = str(self.track_leaderboard[row][1]).strip()
+			name = self.track_leaderboard[row][1]
 			lap = self.track_leaderboard[row][2]
-
-			if name == self.game.player_name:
+			if name == str(self.game.player_name) and lap == self.game.fastest_lap:
 				if row > 8 and row < len(self.track_leaderboard) - 7:
-					scroll = (HEIGHT * 0.075 * row - HALF_HEIGHT + (self.grey_box.get_height())) *-1
+					self.scroll = -(self.grey_box.get_height() * (row - 6))
 				elif row <= 8:
-					scroll = SCALE
+					self.scroll = SCALE
 				else:
-					scroll = -self.leaderboard_height - (HEIGHT * 0.075) - SCALE
-
-			else:
-				scroll = 0
-	
-
-		return scroll
+					self.scroll = -self.leaderboard_height
 
 	def scrolling_logic(self):
 		keys = pygame.key.get_pressed()
 
-		if (ACTIONS['scroll_up'] or keys[pygame.K_UP]) and self.scroll <= 0:
+		if (ACTIONS['scroll_up'] or keys[pygame.K_UP]) and self.scroll < 0:
 			self.scroll += HEIGHT * 0.05
-		if (ACTIONS['scroll_down'] or keys[pygame.K_DOWN]) and self.scroll >= -self.leaderboard_height - (HEIGHT * 0.075):
+			if self.scroll > 0:
+				self.scroll = 0
+		if (ACTIONS['scroll_down'] or keys[pygame.K_DOWN]) and self.scroll > -self.leaderboard_height - (HEIGHT * 0.075):
 			self.scroll -= HEIGHT * 0.05
 		self.game.reset_keys()
 
@@ -169,6 +164,7 @@ class Leaderboard(State):
 				self.game.screen.blit(self.bronze, (WIDTH * 0.3 + (self.grey_box.get_width()/2) - (4* SCALE) - self.bronze.get_width(), (self.grey_box.get_height()/SCALE) + self.scroll + start_height + HEIGHT * 0.075 * row))
 
 	def update(self):
+		self.car.update()
 		self.scrolling_logic()
 		self.fadein()
 		if self.fading_out:
@@ -190,14 +186,17 @@ class Leaderboard(State):
 	
 		self.show_list()
 		
-		self.render_button('Main Menu', WHITE, BLACK, WHITE, (WIDTH * 0.75, HALF_HEIGHT))
+		self.render_button('Main Menu', WHITE, BLACK, WHITE, (WIDTH * 0.8, HEIGHT * 0.8))
+
+		# show car
+		display.blit(self.car.image, self.car.pos)
+		self.car.angle += 2
 
 		# fadeout and next state
 		display.blit(self.fade[0], self.fade[1])
 		self.fade[0].set_alpha(self.fadeout_alpha)
 
-		# DEBUGGER !!!
-		self.game.render_text(self.game.stack, PURPLE, self.game.smaller_font, (WIDTH * 0.75, HEIGHT * 0.9))
+		
 
 				
 				
