@@ -36,6 +36,7 @@ class Game():
 		self.small_font = pygame.font.Font(FONT, 50)
 		self.bigger_font = pygame.font.Font(FONT, 70)
 		self.smaller_font = pygame.font.Font(FONT, 30)
+		self.even_smaller_font = pygame.font.Font(FONT, 20)
 		self.big_font = pygame.font.Font(FONT, 40)
 
 		self.get_leaderboard()

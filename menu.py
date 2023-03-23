@@ -78,7 +78,6 @@ class Menu(State):
 
 	def update(self):
 		
-
 		self.fadein()
 		if self.fading_out:
 			self.fadeout_alpha += 255//50

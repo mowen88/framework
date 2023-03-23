@@ -10,36 +10,23 @@ class Leaderboard(State):
 		self.game = game
 		self.level = level
 		self.track_leaderboard = []
-		self.alpha = 0
 		
 		# append new leaderboard entry if from name entry state...
 		self.get_leaderboard()
 
-		#fade surf
-		self.fading = False
+		# button conditions, fade in and state
+		self.state = ''
+		self.alpha = 0
+
+		# fade out surf
+		self.fading_out = False
 		self.fadeout_alpha = 0
-		self.fade_surf = pygame.Surface(RES)
-		self.fade_surf.fill(WHITE)
-		self.fade_surf.set_alpha(self.fadeout_alpha)
-		self.fade_rect = self.fade_surf.get_rect(center = RES/2)
-		
-		#font
-		self.small_font = pygame.font.Font(FONT, 50)
-		self.big_font = pygame.font.Font(FONT, 70)
-		self.smaller_font = pygame.font.Font(FONT, 20)
-		self.bigger_font = pygame.font.Font(FONT, 40)
+		self.fade = self.fadeout(WHITE, self.fadeout_alpha)
 
 		# images
 		self.gold = pygame.image.load('assets/cups/gold.png').convert_alpha()
 		self.silver = pygame.image.load('assets/cups/silver.png').convert_alpha()
 		self.bronze = pygame.image.load('assets/cups/bronze.png').convert_alpha()
-
-		# continue box
-		self.button_surf = pygame.Surface((WIDTH * 0.18, HEIGHT * 0.1))
-		self.continue_button_surf = self.button_surf
-		self.continue_button_surf.fill(BLACK)
-		self.continue_button_surf.set_alpha(self.alpha)
-		self.continue_button_rect = self.continue_button_surf.get_rect(center = (WIDTH * 0.78, HEIGHT * 0.5))
 
 		#text boxes
 		self.box_size = (180 * SCALE, 13 * SCALE)
@@ -52,11 +39,24 @@ class Leaderboard(State):
 		self.white_box.fill(WHITE)
 		self.white_box_rect = self.white_box.get_rect(center = RES/2)
 
+
 		# get starting scroll position at point of current players fastest lap
 		self.scroll = self.get_start_scroll_pos()
 
 		# background
 		self.background = self.game.get_image('assets/backgrounds/victory.png', RES, RES/2)
+
+	def fadein(self):
+		self.alpha += 5
+		if self.alpha >= 200:
+			self.alpha = 200
+
+	def fadeout(self, colour, alpha):
+		surf = pygame.Surface(RES)
+		surf.fill(colour)
+		surf.set_alpha(alpha)
+		rect = surf.get_rect(center = RES/2)
+		return(surf, rect)
 
 	def get_leaderboard(self):
 		if self.state_from == 'Name Entry':
@@ -83,43 +83,56 @@ class Leaderboard(State):
 
 		self.leaderboard_height = ((HEIGHT * 0.075) * len(self.track_leaderboard)) - HEIGHT
 
-	def render_text(self, text, colour, font, pos):
-		surf = font.render(str(text), True, colour)
-		rect = surf.get_rect(center = pos)
-		self.game.screen.blit(surf, rect)
-
 	def get_start_scroll_pos(self):
 		for row in range(len(self.track_leaderboard)):
-			if self.game.player_name in self.track_leaderboard[row] and self.game.fastest_lap in self.track_leaderboard[row]:
+			name = str(self.track_leaderboard[row][1]).strip()
+			lap = self.track_leaderboard[row][2]
+
+			if name == self.game.player_name:
 				if row > 8 and row < len(self.track_leaderboard) - 7:
 					scroll = (HEIGHT * 0.075 * row - HALF_HEIGHT + (self.grey_box.get_height())) *-1
 				elif row <= 8:
 					scroll = SCALE
 				else:
 					scroll = -self.leaderboard_height - (HEIGHT * 0.075) - SCALE
+
 			else:
 				scroll = 0
+	
 
-			return scroll
+		return scroll
 
-	def hover_and_click(self, display):
+	def scrolling_logic(self):
+		keys = pygame.key.get_pressed()
+
+		if (ACTIONS['scroll_up'] or keys[pygame.K_UP]) and self.scroll <= 0:
+			self.scroll += HEIGHT * 0.05
+		if (ACTIONS['scroll_down'] or keys[pygame.K_DOWN]) and self.scroll >= -self.leaderboard_height - (HEIGHT * 0.075):
+			self.scroll -= HEIGHT * 0.05
+		self.game.reset_keys()
+
+	def render_button(self, state, text_colour, button_colour, hover_colour, pos):
+		surf = pygame.Surface((WIDTH * 0.18, HEIGHT * 0.09))
+		colour = text_colour
+		surf.fill(button_colour)
+		surf.set_alpha(self.alpha)
+		rect = surf.get_rect(center = pos)
+		self.game.screen.blit(surf, rect)
+		self.game.render_text(state, text_colour, self.game.smaller_font, pos)
+
+		mx, my = pygame.mouse.get_pos()
+
 		if self.alpha >= 200:
-			self.mx, self.my = pygame.mouse.get_pos()
-
-			if self.continue_button_rect.collidepoint(self.mx, self.my):
-				pygame.draw.rect(display, WHITE, self.continue_button_rect)
-				self.continue_colour = BLACK
-				if pygame.mouse.get_pressed()[0] == 1 and not self.fading:
-					self.fading = True
-
-			else:
-				self.continue_colour = WHITE
-
-			self.render_text('Main Menu', self.continue_colour, self.smaller_font, (self.continue_button_rect.center))
+			if rect.collidepoint(mx, my) or self.state == state:
+				pygame.draw.rect(self.game.screen, hover_colour, rect)
+				pygame.draw.rect(self.game.screen, button_colour, rect, SCALE//2)
+				self.game.render_text(state, button_colour, self.game.smaller_font, pos)
+				if pygame.mouse.get_pressed()[0] == 1 and not self.fading_out:
+					self.state = state
+					self.fading_out = True
 		
 	def show_list(self):
 		start_height = 14 * SCALE
-		
 		for row in range(len(self.track_leaderboard)):
 			
 			index = self.track_leaderboard[row][0]
@@ -134,15 +147,15 @@ class Leaderboard(State):
 			self.grey_box.set_alpha(self.alpha)
 
 			if row < len(self.track_leaderboard) and self.alpha >= 200:
-				self.render_text(f'{index}   |   {name}   |   {lap}   |   {car}   |   {direction}', WHITE, self.smaller_font, (WIDTH * 0.3, (self.grey_box.get_height()/2) + self.scroll + start_height + HEIGHT * 0.075 * row))
+				self.game.render_text(f'{index}   |   {name}   |   {lap}   |   {car}   |   {direction}', WHITE, self.game.even_smaller_font, (WIDTH * 0.3, (self.grey_box.get_height()/2) + self.scroll + start_height + HEIGHT * 0.075 * row))
 			
 			if self.game.player_name in self.track_leaderboard[row] and self.game.fastest_lap in self.track_leaderboard[row]:
 				self.game.screen.blit(self.white_box, (WIDTH * 0.3 - (self.grey_box.get_width()/2), self.scroll + start_height + HEIGHT * 0.075 * row))
-				self.render_text(f'{index}   |   {name}   |   {lap}   |   {car}   |   {direction}', BLACK, self.smaller_font, (WIDTH * 0.3, (self.grey_box.get_height()/2) + self.scroll + start_height + HEIGHT * 0.075 * row))
+				self.game.render_text(f'{index}   |   {name}   |   {lap}   |   {car}   |   {direction}', BLACK, self.game.even_smaller_font, (WIDTH * 0.3, (self.grey_box.get_height()/2) + self.scroll + start_height + HEIGHT * 0.075 * row))
 			
 			self.game.screen.blit(self.white_box, (WIDTH * 0.3 - (self.grey_box.get_width()/2), 0))
 			pygame.draw.line(self.game.screen, BLACK, ((WIDTH * 0.3 - (self.grey_box.get_width()/2), self.grey_box.get_height())), ((WIDTH * 0.3 + (self.grey_box.get_width()/2), self.grey_box.get_height())), SCALE//2)
-			self.render_text('Position  |   Name   |   Lap Time   |   Car   |    Track reversed?', BLACK, self.smaller_font, (WIDTH * 0.3, (self.grey_box.get_height()/2)))
+			self.game.render_text('Position  |   Name   |   Lap Time   |   Car   |    Track reversed?', BLACK, self.game.even_smaller_font, (WIDTH * 0.3, (self.grey_box.get_height()/2)))
 
 			# render cups for 1st, 2nd and 3rd
 			if row == 0 and self.alpha >= 200:
@@ -156,30 +169,9 @@ class Leaderboard(State):
 				self.game.screen.blit(self.bronze, (WIDTH * 0.3 + (self.grey_box.get_width()/2) - (4* SCALE) - self.bronze.get_width(), (self.grey_box.get_height()/SCALE) + self.scroll + start_height + HEIGHT * 0.075 * row))
 
 	def update(self):
-		self.alpha += 5
-		if self.alpha >= 200:
-			self.alpha = 200
-			if (ACTIONS['scroll_up'] or ACTIONS['up']) and self.scroll <= 0:
-				self.scroll += HEIGHT * 0.05
-			if (ACTIONS['scroll_down'] or ACTIONS['down']) and self.scroll >= -self.leaderboard_height - (HEIGHT * 0.075):
-				self.scroll -= HEIGHT * 0.05
-			self.game.reset_keys()
-
-	def render(self, display):
-		display.blit(self.background[0], self.background[1])
-		
-		self.show_list()
-
-		self.game.screen.blit(self.continue_button_surf, self.continue_button_rect)
-		self.continue_button_surf.set_alpha(self.alpha)
-		
-		self.hover_and_click(self.game.screen)
-
-		# fadeout and next state
-		self.game.screen.blit(self.fade_surf, self.fade_rect)
-		self.fade_surf.set_alpha(self.fadeout_alpha)
-
-		if self.fading:
+		self.scrolling_logic()
+		self.fadein()
+		if self.fading_out:
 			self.fadeout_alpha += 255//50
 			if self.fadeout_alpha >= 255:
 				if self.state_from == 'Menu':
@@ -191,7 +183,21 @@ class Leaderboard(State):
 					self.prev_state.exit_state()
 					self.level.exit_state()
 
-		self.game.render_text(self.game.stack, PURPLE, self.game.smaller_font, RES/2)
+		
+
+	def render(self, display):
+		display.blit(self.background[0], self.background[1])
+	
+		self.show_list()
+		
+		self.render_button('Main Menu', WHITE, BLACK, WHITE, (WIDTH * 0.75, HALF_HEIGHT))
+
+		# fadeout and next state
+		display.blit(self.fade[0], self.fade[1])
+		self.fade[0].set_alpha(self.fadeout_alpha)
+
+		# DEBUGGER !!!
+		self.game.render_text(self.game.stack, PURPLE, self.game.smaller_font, (WIDTH * 0.75, HEIGHT * 0.9))
 
 				
 				
