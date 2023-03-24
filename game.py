@@ -124,12 +124,6 @@ class Game():
 	def get_time(self):
 		self.time = pygame.time.get_ticks() / 1000
 
-	def get_image(self, path, size, pos):
-		surf = pygame.image.load(path).convert_alpha()
-		surf = pygame.transform.scale(surf, size)
-		rect = surf.get_rect(center = pos)
-		return(surf, rect)
-
 	def load_states(self):
 		self.title_screen = Title(self)
 		self.stack.append(self.title_screen)
@@ -146,10 +140,11 @@ class Game():
 
 		return surf_list
 
-	def draw_text(self, surf, text, colour, size, pos):
-		text_surf = self.font.render(text, True, colour, size)
-		text_rect = text_surf.get_rect(center = pos)
-		surf.blit(text_surf, text_rect)
+	def get_image(self, path, size, pos):
+		surf = pygame.image.load(path).convert_alpha()
+		surf = pygame.transform.scale(surf, size)
+		rect = surf.get_rect(center = pos)
+		return(surf, rect)
 
 	def render_text(self, text, colour, font, pos):
 		surf = font.render(str(text), True, colour)

@@ -230,8 +230,7 @@ class Level(State):
 		
 		display.fill(BLUE)
 		self.all_sprites.offset_draw(self.player)
-		self.game.render_text(str(f'{self.game.clock.get_fps(): .1f}'), RED, self.game.smaller_font, (HALF_WIDTH /1.5, HEIGHT * 0.9))
-		self.game.render_text(str(self.game.stack), LIGHT_BLUE, self.game.smaller_font, (HALF_WIDTH, HEIGHT * 0.9))
+		self.game.render_text(str(f'{self.game.clock.get_fps(): .1f}'), WHITE, self.game.big_font, (HALF_WIDTH /1.5, HEIGHT * 0.9))
 		
 		self.GUI.update()
 

@@ -6,103 +6,76 @@ class RaceOver:
 	def __init__(self, game):
 
 		self.game = game
-		self.mx, self.my = (0,0)
 		self.alpha = 0
 		self.state = ''
 
-		self.continue_colour = WHITE
-		self.restart_colour = WHITE
-
-		#fade surf
-		self.fading = False
+		# fade out surf
+		self.fading_out = False
 		self.fadeout_alpha = 0
-		self.fade_surf = pygame.Surface(RES)
-		self.fade_surf.fill(WHITE)
-		self.fade_surf.set_alpha(self.fadeout_alpha)
-		self.fade_rect = self.fade_surf.get_rect(center = RES/2)
-
-		#font
-		self.small_font = pygame.font.Font(FONT, 50)
-		self.bigger_font = pygame.font.Font(FONT, 110)
-		self.smaller_font = pygame.font.Font(FONT, 30)
-		self.big_font = pygame.font.Font(FONT, 40)
+		self.fade = self.fadeout(WHITE, self.fadeout_alpha)
 
 		# for swipe up text and fade in of buttons
 		self.y_pos = WIDTH + (5 * SCALE)
-		
-		# continue box
-		self.button_surf = pygame.Surface((WIDTH * 0.18, HEIGHT * 0.1))
-		self.continue_button_surf = self.button_surf
-		self.continue_button_surf.fill(BLACK)
-		self.continue_button_surf.set_alpha(self.alpha)
-		self.continue_button_rect = self.continue_button_surf.get_rect(center = (WIDTH * 0.4, HEIGHT * 0.65))
-		# restart box
-		self.restart_button_surf = self.button_surf
-		self.restart_button_surf.fill(BLACK)
-		self.restart_button_surf.set_alpha(self.alpha)
-		self.restart_button_rect = self.restart_button_surf.get_rect(center = (WIDTH * 0.6, HEIGHT * 0.65))
 
-	def render_text(self, text, colour, font, pos):
-		surf = font.render(str(text), True, colour)
-		rect = surf.get_rect(center = pos)
-		self.game.screen.blit(surf, rect)
-
-	def hover_and_click(self, display):
-
-		mouse = pygame.mouse.get_pressed(num_buttons=5)
-
+	def fadein(self):
+		self.alpha += 5
 		if self.alpha >= 200:
-			self.game.screen.blit(self.continue_button_surf, self.continue_button_rect)
-			self.continue_button_surf.set_alpha(self.alpha)
-			self.game.screen.blit(self.restart_button_surf, self.restart_button_rect)
-			self.restart_button_surf.set_alpha(self.alpha)
-			
-			self.mx, self.my = pygame.mouse.get_pos()
+			self.alpha = 200
 
-			if self.continue_button_rect.collidepoint(self.mx, self.my) or self.state == 'Continue':
-				pygame.draw.rect(display, WHITE, self.continue_button_rect)
-				self.continue_colour = BLACK
-				if pygame.mouse.get_pressed()[0] == 1 and not self.fading:
-					self.state = 'Continue'
-					self.fading = True
-
-			elif self.restart_button_rect.collidepoint(self.mx, self.my) or self.state == 'Restart':
-				pygame.draw.rect(display, WHITE, self.restart_button_rect)
-				self.restart_colour = BLACK
-				if pygame.mouse.get_pressed()[0] == 1 and not self.fading:
-					self.state = 'Restart'
-					self.fading = True
-			else:
-				self.continue_colour = WHITE
-				self.restart_colour = WHITE
-
-			self.render_text('Continue', self.continue_colour, self.smaller_font, (self.continue_button_rect.center))
-			self.render_text('Retry', self.restart_colour, self.smaller_font, (self.restart_button_rect.center))
-
-
-	def update(self, level):
-		
-		self.render_text('Race Over', WHITE, self.bigger_font, (HALF_WIDTH, self.y_pos))
-
+	def swipe_in(self):
 		self.y_pos -= 20
 		if self.y_pos <= HEIGHT * 0.45:
 			self.y_pos = HEIGHT * 0.45
-			self.alpha += 5
-			if self.alpha >= 200:
-				self.alpha = 200
+
+	def fadeout(self, colour, alpha):
+		surf = pygame.Surface(RES)
+		surf.fill(colour)
+		surf.set_alpha(alpha)
+		rect = surf.get_rect(center = RES/2)
+		return(surf, rect)
+
+	def render_button(self, state, text_colour, button_colour, hover_colour, pos):
+		surf = pygame.Surface((WIDTH * 0.18, HEIGHT * 0.09))
+		colour = text_colour
+		surf.fill(button_colour)
+		surf.set_alpha(self.alpha)
+		rect = surf.get_rect(center = pos)
+		self.game.screen.blit(surf, rect)
+		self.game.render_text(state, text_colour, self.game.smaller_font, pos)
+
+		mx, my = pygame.mouse.get_pos()
+
+		if self.alpha >= 200:
+			if rect.collidepoint(mx, my) or self.state == state:
+				pygame.draw.rect(self.game.screen, hover_colour, rect)
+				self.game.render_text(state, button_colour, self.game.smaller_font, pos)
+				if pygame.mouse.get_pressed()[0] == 1 and not self.fading_out:
+					self.state = state
+					self.fading_out = True
+
+
+	def update(self, level):
+
+		# fade in boxes and swipe in header
+		self.fadein()
+		self.swipe_in()
+
+		# Header text
+		self.game.render_text('Race Over', WHITE, self.game.bigger_font, (HALF_WIDTH, self.y_pos))
 		
-		self.hover_and_click(self.game.screen)
+		# buttons
+		self.render_button('Continue', WHITE, BLACK, WHITE, (WIDTH * 0.4, HEIGHT * 0.65))
+		self.render_button('Retry', WHITE, BLACK, WHITE, (WIDTH * 0.6, HEIGHT * 0.65))
 
 		# fadeout and next state
-		self.game.screen.blit(self.fade_surf, self.fade_rect)
-		self.fade_surf.set_alpha(self.fadeout_alpha)
+		self.game.screen.blit(self.fade[0], self.fade[1])
+		self.fade[0].set_alpha(self.fadeout_alpha)
 
-		if self.fading:
+		if self.fading_out:
 			self.fadeout_alpha += 255//50
 			if self.fadeout_alpha >= 255:
 				if self.state == 'Continue':
-					new_state = NameEntry(self.game, level)
-					new_state.enter_state()
+					NameEntry(self.game, level).enter_state()
 				else:
 					self.game.create_level()
 			

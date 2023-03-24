@@ -85,8 +85,7 @@ class NameEntry(State):
 				self.game.name_entry_active = False
 
 				# pass 'name entry' to leaderboard so it can append and show the new entry
-				new_state = Leaderboard(self.game, self.level, 'Name Entry')
-				new_state.enter_state()
+				Leaderboard(self.game, self.level, 'Name Entry').enter_state()
 
 		self.game.reset_keys()	
 

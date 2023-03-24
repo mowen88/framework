@@ -1,21 +1,33 @@
-import pygame
+import pygame, csv
+
 from state import State
+from leaderboard import Leaderboard
 from settings import *
 
-class PauseMenu(State):
-	def __init__(self, game):
+#from zone import Zone
+
+class CarTrackSelect(State):
+	def __init__(self, game, level):
 		State.__init__(self, game)
 
-		self.game = game
-	
-		# button conditions, fade in and state
+		self.level = level
+		self.track_leaderboard = []
+
 		self.state = ''
-		self.alpha = 200
+		self.alpha = 0
 
 		# fade out surf
 		self.fading_out = False
 		self.fadeout_alpha = 0
 		self.fade = self.fadeout(WHITE, self.fadeout_alpha)
+
+		# background
+		self.background = self.game.get_image('assets/backgrounds/i-pace.png', RES, RES/2)
+
+	def fadein(self):
+		self.alpha += 5
+		if self.alpha >= 200:
+			self.alpha = 200
 
 	def fadeout(self, colour, alpha):
 		surf = pygame.Surface(RES)
@@ -41,43 +53,27 @@ class PauseMenu(State):
 				self.game.render_text(state, button_colour, self.game.smaller_font, pos)
 				if pygame.mouse.get_pressed()[0] == 1 and not self.fading_out:
 					self.state = state
-					if self.state == 'Main Menu':
-						self.fading_out = True
-					elif self.state == 'Retry':
-						self.prev_state.exit_state()
-						self.exit_state()
-						self.game.create_level()
-					else:
-						self.prev_state.timer.stopstart()
-						self.exit_state()
+					self.fading_out = True
 
-	def unpause(self):
-		if ACTIONS['space']:
-			self.prev_state.timer.stopstart()
-			self.exit_state()
-		self.game.reset_keys()
-				
-	def update(self):	
-		self.unpause()
-
+	def update(self):
+		
+		self.fadein()
 		if self.fading_out:
 			self.fadeout_alpha += 255//50
 			if self.fadeout_alpha >= 255:
-				self.prev_state.exit_state()
-				self.prev_state.exit_state()
-				self.prev_state.exit_state()
-				self.exit_state()
+				if self.state == 'Race':
+					self.level.enter_state()
 
 	def render(self, display):
-		self.prev_state.render(display)
+		display.blit(self.background[0], self.background[1])
 
-		self.game.render_text('Paused', WHITE, self.game.bigger_font, (HALF_WIDTH, HEIGHT * 0.45))
+		self.game.render_text('Track Select', WHITE, self.game.bigger_font, (HALF_WIDTH, HEIGHT /4))
 
-		self.render_button('Continue', WHITE, BLACK, WHITE, (WIDTH * 0.3, HEIGHT * 0.6))
-		self.render_button('Retry', WHITE, BLACK, WHITE, (HALF_WIDTH, HEIGHT * 0.6))
-		self.render_button('Main Menu', WHITE, BLACK, WHITE, (WIDTH * 0.7, HEIGHT * 0.6))
+		self.render_button('Race', WHITE, BLACK, WHITE, (HALF_WIDTH, HEIGHT * 0.4))
 
 		display.blit(self.fade[0], self.fade[1])
 		self.fade[0].set_alpha(self.fadeout_alpha)
+	
+
 		
-		
+				

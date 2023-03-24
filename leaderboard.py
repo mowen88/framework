@@ -28,16 +28,9 @@ class Leaderboard(State):
 		self.bronze = pygame.image.load('assets/cups/bronze.png').convert_alpha()
 
 		#text boxes
-		self.box_size = (180 * SCALE, 13 * SCALE)
-		self.grey_box = pygame.Surface(self.box_size)
-		self.grey_box.fill(BLACK)
-		self.grey_box.set_alpha(self.alpha)
-		self.grey_box_rect = self.grey_box.get_rect(center = RES/2)
-
-		self.white_box = pygame.Surface(self.box_size)
-		self.white_box.fill(WHITE)
-		self.white_box_rect = self.white_box.get_rect(center = RES/2)
-
+		self.grey_box = self.get_box(BLACK, self.alpha, RES/2)
+		self.white_box = self.get_box(WHITE, 255, RES/2)
+		
 		# append new leaderboard entry if from name entry state...
 		self.get_leaderboard()
 
@@ -45,6 +38,14 @@ class Leaderboard(State):
 		self.background = self.game.get_image('assets/backgrounds/victory.png', RES, RES/2)
 
 		self.car = StackedSprite(self.game, self.level, self.game.car_type, (WIDTH * 0.75, HALF_HEIGHT), 90)
+
+	def get_box(self, colour, alpha, pos):
+		size = (180 * SCALE, 13 * SCALE)
+		surf = pygame.Surface(size)
+		surf.fill(colour)
+		surf.set_alpha(alpha)
+		rect = surf.get_rect(center = pos)
+		return(surf, rect)
 
 	def fadein(self):
 		self.alpha += 5
@@ -75,7 +76,7 @@ class Leaderboard(State):
 		for index, row in enumerate(LEADERBOARD_DATA):
 			row.insert(0, index + 1)
 
-		LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[2])
+		#LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[2])
 
 		for entry in LEADERBOARD_DATA:
 			if self.game.track in entry: 
@@ -89,7 +90,7 @@ class Leaderboard(State):
 			lap = self.track_leaderboard[row][2]
 			if name == str(self.game.player_name) and lap == self.game.fastest_lap:
 				if row > 8 and row < len(self.track_leaderboard) - 7:
-					self.scroll = -(self.grey_box.get_height() * (row - 6))
+					self.scroll = -(self.grey_box[0].get_height() * (row - 6))
 				elif row <= 8:
 					self.scroll = SCALE
 				else:
@@ -104,6 +105,8 @@ class Leaderboard(State):
 				self.scroll = 0
 		if (ACTIONS['scroll_down'] or keys[pygame.K_DOWN]) and self.scroll > -self.leaderboard_height - (HEIGHT * 0.075):
 			self.scroll -= HEIGHT * 0.05
+			if self.scroll < -self.leaderboard_height - (HEIGHT * 0.075):
+				self.scroll = -self.leaderboard_height - (HEIGHT * 0.075)
 		self.game.reset_keys()
 
 	def render_button(self, state, text_colour, button_colour, hover_colour, pos):
@@ -126,7 +129,7 @@ class Leaderboard(State):
 					self.state = state
 					self.fading_out = True
 		
-	def show_list(self):
+	def show_list_of_entries(self):
 		start_height = 14 * SCALE
 		for row in range(len(self.track_leaderboard)):
 			
@@ -138,35 +141,37 @@ class Leaderboard(State):
 			car = self.track_leaderboard[row][4]
 			direction = self.track_leaderboard[row][5]
 
-			self.game.screen.blit(self.grey_box, (WIDTH * 0.3 - (self.grey_box.get_width()/2), self.scroll + start_height + HEIGHT * 0.075 * row))
-			self.grey_box.set_alpha(self.alpha)
+			self.game.screen.blit(self.grey_box[0], (WIDTH * 0.3 - (self.grey_box[0].get_width()/2), self.scroll + start_height + HEIGHT * 0.075 * row))
+			self.grey_box[0].set_alpha(self.alpha)
 
 			if row < len(self.track_leaderboard) and self.alpha >= 200:
-				self.game.render_text(f'{index}   |   {name}   |   {lap}   |   {car}   |   {direction}', WHITE, self.game.even_smaller_font, (WIDTH * 0.3, (self.grey_box.get_height()/2) + self.scroll + start_height + HEIGHT * 0.075 * row))
+				self.game.render_text(f'{index}   |   {name}   |   {lap}   |   {car}   |   {direction}', WHITE, self.game.even_smaller_font, (WIDTH * 0.3, (self.grey_box[0].get_height()/2) + self.scroll + start_height + HEIGHT * 0.075 * row))
 			
 			if self.game.player_name in self.track_leaderboard[row] and self.game.fastest_lap in self.track_leaderboard[row]:
-				self.game.screen.blit(self.white_box, (WIDTH * 0.3 - (self.grey_box.get_width()/2), self.scroll + start_height + HEIGHT * 0.075 * row))
-				self.game.render_text(f'{index}   |   {name}   |   {lap}   |   {car}   |   {direction}', BLACK, self.game.even_smaller_font, (WIDTH * 0.3, (self.grey_box.get_height()/2) + self.scroll + start_height + HEIGHT * 0.075 * row))
+				self.game.screen.blit(self.white_box[0], (WIDTH * 0.3 - (self.white_box[0].get_width()/2), self.scroll + start_height + HEIGHT * 0.075 * row))
+				self.game.render_text(f'{index}   |   {name}   |   {lap}   |   {car}   |   {direction}', BLACK, self.game.even_smaller_font, (WIDTH * 0.3, (self.grey_box[0].get_height()/2) + self.scroll + start_height + HEIGHT * 0.075 * row))
 			
-			self.game.screen.blit(self.white_box, (WIDTH * 0.3 - (self.grey_box.get_width()/2), 0))
-			pygame.draw.line(self.game.screen, BLACK, ((WIDTH * 0.3 - (self.grey_box.get_width()/2), self.grey_box.get_height())), ((WIDTH * 0.3 + (self.grey_box.get_width()/2), self.grey_box.get_height())), SCALE//2)
-			self.game.render_text('Position  |   Name   |   Lap Time   |   Car   |    Track reversed?', BLACK, self.game.even_smaller_font, (WIDTH * 0.3, (self.grey_box.get_height()/2)))
+			self.game.screen.blit(self.white_box[0], (WIDTH * 0.3 - (self.white_box[0].get_width()/2), 0))
+			pygame.draw.line(self.game.screen, BLACK, ((WIDTH * 0.3 - (self.white_box[0].get_width()/2), self.grey_box[0].get_height())), ((WIDTH * 0.3 + (self.grey_box[0].get_width()/2), self.grey_box[0].get_height())), SCALE//2)
+			self.game.render_text('Position  |   Name   |   Lap Time   |   Car   |    Track reversed?', BLACK, self.game.even_smaller_font, (WIDTH * 0.3, (self.grey_box[0].get_height()/2)))
 
 			# render cups for 1st, 2nd and 3rd
-			if row == 0 and self.alpha >= 200:
-				self.game.screen.blit(self.gold, (WIDTH * 0.3 - (self.grey_box.get_width()/2) + (4* SCALE), (self.grey_box.get_height()/SCALE) + self.scroll + start_height + HEIGHT * 0.075 * row))
-				self.game.screen.blit(self.gold, (WIDTH * 0.3 + (self.grey_box.get_width()/2) - (4* SCALE) - self.gold.get_width(), (self.grey_box.get_height()/SCALE) + self.scroll + start_height + HEIGHT * 0.075 * row))
-			if row == 1 and self.alpha >= 200:
-				self.game.screen.blit(self.silver, (WIDTH * 0.3 - (self.grey_box.get_width()/2) + (4* SCALE), (self.grey_box.get_height()/SCALE) + self.scroll + start_height + HEIGHT * 0.075 * row))
-				self.game.screen.blit(self.silver, (WIDTH * 0.3 + (self.grey_box.get_width()/2) - (4* SCALE) - self.silver.get_width(), (self.grey_box.get_height()/SCALE) + self.scroll + start_height + HEIGHT * 0.075 * row))
-			if row == 2 and self.alpha >= 200:
-				self.game.screen.blit(self.bronze, (WIDTH * 0.3 - (self.grey_box.get_width()/2) + (4* SCALE), (self.grey_box.get_height()/SCALE) + self.scroll + start_height + HEIGHT * 0.075 * row))
-				self.game.screen.blit(self.bronze, (WIDTH * 0.3 + (self.grey_box.get_width()/2) - (4* SCALE) - self.bronze.get_width(), (self.grey_box.get_height()/SCALE) + self.scroll + start_height + HEIGHT * 0.075 * row))
+			if self.alpha >= 200:
+				if row == 0:
+					self.game.screen.blit(self.gold, (WIDTH * 0.3 - (self.grey_box[0].get_width()/2) + (4* SCALE), (self.grey_box[0].get_height()/SCALE) + self.scroll + start_height + HEIGHT * 0.075 * row))
+					self.game.screen.blit(self.gold, (WIDTH * 0.3 + (self.grey_box[0].get_width()/2) - (4* SCALE) - self.gold.get_width(), (self.grey_box[0].get_height()/SCALE) + self.scroll + start_height + HEIGHT * 0.075 * row))
+				if row == 1:
+					self.game.screen.blit(self.silver, (WIDTH * 0.3 - (self.grey_box[0].get_width()/2) + (4* SCALE), (self.grey_box[0].get_height()/SCALE) + self.scroll + start_height + HEIGHT * 0.075 * row))
+					self.game.screen.blit(self.silver, (WIDTH * 0.3 + (self.grey_box[0].get_width()/2) - (4* SCALE) - self.silver.get_width(), (self.grey_box[0].get_height()/SCALE) + self.scroll + start_height + HEIGHT * 0.075 * row))
+				if row == 2:
+					self.game.screen.blit(self.bronze, (WIDTH * 0.3 - (self.grey_box[0].get_width()/2) + (4* SCALE), (self.grey_box[0].get_height()/SCALE) + self.scroll + start_height + HEIGHT * 0.075 * row))
+					self.game.screen.blit(self.bronze, (WIDTH * 0.3 + (self.grey_box[0].get_width()/2) - (4* SCALE) - self.bronze.get_width(), (self.grey_box[0].get_height()/SCALE) + self.scroll + start_height + HEIGHT * 0.075 * row))
 
 	def update(self):
 		self.car.update()
 		self.scrolling_logic()
 		self.fadein()
+
 		if self.fading_out:
 			self.fadeout_alpha += 255//50
 			if self.fadeout_alpha >= 255:
@@ -177,14 +182,13 @@ class Leaderboard(State):
 					self.exit_state()
 					self.prev_state.exit_state()
 					self.prev_state.exit_state()
+					self.prev_state.exit_state()
 					self.level.exit_state()
-
 		
-
 	def render(self, display):
 		display.blit(self.background[0], self.background[1])
 	
-		self.show_list()
+		self.show_list_of_entries()
 		
 		self.render_button('Main Menu', WHITE, BLACK, WHITE, (WIDTH * 0.8, HEIGHT * 0.8))
 

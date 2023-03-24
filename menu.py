@@ -2,6 +2,7 @@ import pygame, csv
 
 from state import State
 from level import Level
+from selections_menu import CarTrackSelect
 from leaderboard import Leaderboard
 from settings import *
 
@@ -13,27 +14,6 @@ class Menu(State):
 
 		self.level = Level(self.game)
 		self.track_leaderboard = []
-
-		# reset leaderboard and player name
-		self.game.player_name = ''
-		LEADERBOARD_DATA.clear()
-		self.game.get_leaderboard()
-
-		for index, entry in enumerate(LEADERBOARD_DATA):
-			if self.game.track in entry:
-				self.track_leaderboard.append(entry)
-
-		LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[1])
-		self.track_leaderboard.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[1])
-
-		for index, row in enumerate(self.track_leaderboard):
-			row.insert(0, index + 1)
-
-		LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[2])
-		self.track_leaderboard.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[2])
-
-
-		# button conditions, fade in and state
 		self.state = ''
 		self.alpha = 0
 
@@ -44,6 +24,8 @@ class Menu(State):
 
 		# background
 		self.background = self.game.get_image('assets/backgrounds/i-pace.png', RES, RES/2)
+
+		self.selections_menu = CarTrackSelect(self.game, self.level)
 
 	def fadein(self):
 		self.alpha += 5
@@ -83,7 +65,7 @@ class Menu(State):
 			self.fadeout_alpha += 255//50
 			if self.fadeout_alpha >= 255:
 				if self.state == 'Race':
-					self.level.enter_state()
+					self.selections_menu.enter_state()
 				if self.state == 'Leaderboard':
 					Leaderboard(self.game, self.level, 'Menu').enter_state()
 
@@ -99,6 +81,7 @@ class Menu(State):
 
 		display.blit(self.fade[0], self.fade[1])
 		self.fade[0].set_alpha(self.fadeout_alpha)
+
 
 		
 				
