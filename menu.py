@@ -68,6 +68,9 @@ class Menu(State):
 					self.selections_menu.enter_state()
 				if self.state == 'Leaderboard':
 					Leaderboard(self.game, self.level, 'Menu').enter_state()
+				if self.state == 'Quit':
+					self.game.running = False
+					self.game.playing = False
 
 	def render(self, display):
 		display.blit(self.background[0], self.background[1])

@@ -1,6 +1,7 @@
 import pygame, csv
 
 from state import State
+from entity import StackedSprite
 from leaderboard import Leaderboard
 from settings import *
 
@@ -16,13 +17,22 @@ class CarTrackSelect(State):
 		self.state = ''
 		self.alpha = 0
 
+		#vars
+		self.laps = self.game
+
 		# fade out surf
 		self.fading_out = False
 		self.fadeout_alpha = 0
 		self.fade = self.fadeout(WHITE, self.fadeout_alpha)
 
+		# track select box
+		self.grey_box = self.get_box(BLACK, self.alpha, (WIDTH * 0.25, HALF_HEIGHT))
+
 		# background
 		self.background = self.game.get_image('assets/backgrounds/i-pace.png', RES, RES/2)
+
+		# import classes
+		self.car = StackedSprite(self.game, self.level, self.game.car_type, (WIDTH * 0.65, HALF_HEIGHT), 90)
 
 	def fadein(self):
 		self.alpha += 5
@@ -35,6 +45,18 @@ class CarTrackSelect(State):
 		surf.set_alpha(alpha)
 		rect = surf.get_rect(center = RES/2)
 		return(surf, rect)
+
+	def get_box(self, colour, alpha, pos):
+		size = (WIDTH * 0.4, HEIGHT * 0.8)
+		surf = pygame.Surface(size)
+		surf.fill(colour)
+		surf.set_alpha(alpha)
+		rect = surf.get_rect(center = pos)
+		return(surf, rect)
+
+	def draw_circle(self, colour, alpha, pos):
+		pygame.draw.circle(self.game.screen, colour, pos, 5 * SCALE)
+
 
 	def render_button(self, state, text_colour, button_colour, hover_colour, pos):
 		surf = pygame.Surface((WIDTH * 0.18, HEIGHT * 0.09))
@@ -56,7 +78,7 @@ class CarTrackSelect(State):
 					self.fading_out = True
 
 	def update(self):
-		
+		self.car.update()
 		self.fadein()
 		if self.fading_out:
 			self.fadeout_alpha += 255//50
@@ -67,9 +89,21 @@ class CarTrackSelect(State):
 	def render(self, display):
 		display.blit(self.background[0], self.background[1])
 
-		self.game.render_text('Track Select', WHITE, self.game.bigger_font, (HALF_WIDTH, HEIGHT /4))
 
-		self.render_button('Race', WHITE, BLACK, WHITE, (HALF_WIDTH, HEIGHT * 0.4))
+		display.blit(self.grey_box[0], self.grey_box[1])
+		self.grey_box[0].set_alpha(self.alpha)
+
+		self.game.render_text('Track Select', WHITE, self.game.big_font, (WIDTH * 0.25, HEIGHT * 0.2))
+
+		self.draw_circle(BLACK, self.alpha, RES/2)
+
+		
+		# show car
+		display.blit(self.car.image, self.car.pos)
+		self.car.angle += 2
+
+		self.render_button('Race', WHITE, BLACK, WHITE, (WIDTH * 0.7, HEIGHT * 0.8))
+
 
 		display.blit(self.fade[0], self.fade[1])
 		self.fade[0].set_alpha(self.fadeout_alpha)

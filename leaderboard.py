@@ -193,8 +193,9 @@ class Leaderboard(State):
 		self.render_button('Main Menu', WHITE, BLACK, WHITE, (WIDTH * 0.8, HEIGHT * 0.8))
 
 		# show car
-		display.blit(self.car.image, self.car.pos)
-		self.car.angle += 2
+		if self.state_from == 'Name Entry':
+			display.blit(self.car.image, self.car.pos)
+			self.car.angle += 2
 
 		# fadeout and next state
 		display.blit(self.fade[0], self.fade[1])
