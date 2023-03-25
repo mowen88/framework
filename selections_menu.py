@@ -33,6 +33,13 @@ class CarTrackSelect(State):
 
 		# import classes
 		self.car = StackedSprite(self.game, self.level, self.game.car_type, (WIDTH * 0.65, HALF_HEIGHT), 90)
+		self.track_surf = pygame.image.load(f'assets/tracks/{self.game.track}/minimap.png').convert_alpha()
+		self.track_surf = pygame.transform.scale(self.track_surf, (self.track_surf.get_width()/SCALE, self.track_surf.get_height()/SCALE))
+		self.track_rect = self.track_surf.get_rect(center = (self.grey_box[1].centerx, self.grey_box[1].centery - (HEIGHT * 0.1)))
+
+		self.left_white_icon = self.game.get_image('assets/white_circle_icon.png', (64, 64), RES/2)
+		self.left_black_icon = self.game.get_image('assets/black_circle_icon.png', (64, 64), (WIDTH * 0.2, HEIGHT * 0.7))
+		self.left_black_icon[0].set_alpha(200)
 
 	def fadein(self):
 		self.alpha += 5
@@ -46,6 +53,7 @@ class CarTrackSelect(State):
 		rect = surf.get_rect(center = RES/2)
 		return(surf, rect)
 
+
 	def get_box(self, colour, alpha, pos):
 		size = (WIDTH * 0.4, HEIGHT * 0.8)
 		surf = pygame.Surface(size)
@@ -54,8 +62,6 @@ class CarTrackSelect(State):
 		rect = surf.get_rect(center = pos)
 		return(surf, rect)
 
-	def draw_circle(self, colour, alpha, pos):
-		pygame.draw.circle(self.game.screen, colour, pos, 5 * SCALE)
 
 
 	def render_button(self, state, text_colour, button_colour, hover_colour, pos):
@@ -95,12 +101,15 @@ class CarTrackSelect(State):
 
 		self.game.render_text('Track Select', WHITE, self.game.big_font, (WIDTH * 0.25, HEIGHT * 0.2))
 
-		self.draw_circle(BLACK, self.alpha, RES/2)
 
+		# show track
+		display.blit(self.track_surf, self.track_rect)
 		
 		# show car
 		display.blit(self.car.image, self.car.pos)
 		self.car.angle += 2
+
+		display.blit(self.left_black_icon[0], self.left_black_icon[1])
 
 		self.render_button('Race', WHITE, BLACK, WHITE, (WIDTH * 0.7, HEIGHT * 0.8))
 
