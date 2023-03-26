@@ -44,7 +44,7 @@ class Game():
 
 		self.player_name = ''
 		self.name_entry_active = False
-		self.track = 'track_1'
+		self.track = 'track_2'
 		self.fastest_lap = None
 		self.total_laps = 10
 		self.reverse_direction = True
@@ -107,6 +107,26 @@ class Game():
 					ACTIONS['scroll_up'] = True
 				elif event.y == -1:
 					ACTIONS['scroll_down'] = True
+
+			if event.type == pygame.MOUSEBUTTONDOWN:
+				if event.button == 1:
+					ACTIONS['left_click'] = True
+				elif event.button == 3:
+					ACTIONS['right_click'] = True
+				elif event.button == 4:
+					ACTIONS['scroll_down'] = True
+				elif event.button == 2:
+					ACTIONS['scroll_up'] = True
+
+			if event.type == pygame.MOUSEBUTTONUP:
+				if event.button == 1:
+					ACTIONS['left_click'] = False
+				elif event.button == 3:
+					ACTIONS['right_click'] = False
+				elif event.button == 4:
+					ACTIONS['scroll_down'] = False
+				elif event.button == 2:
+					ACTIONS['scroll_up'] = False
 
 	def reset_keys(self):
 		for key_pressed in ACTIONS:
