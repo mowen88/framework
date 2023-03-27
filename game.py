@@ -46,7 +46,7 @@ class Game():
 		self.name_entry_active = False
 		self.track = 'track_2'
 		self.fastest_lap = None
-		self.total_laps = 10
+		self.total_laps = 1
 		self.reverse_direction = True
 		self.car_type = 'xjr13'
 

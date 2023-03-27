@@ -4,12 +4,13 @@ from entity import StackedSprite
 from settings import *
 
 class Leaderboard(State):
-	def __init__(self, game, level, state_from):
+	def __init__(self, game, level, car, state_from):
 		State.__init__(self, game)
 
 		self.state_from = state_from
 		self.game = game
 		self.level = level
+		self.car = car
 		self.track_leaderboard = []
 		self.scroll = 0
 		
@@ -37,7 +38,7 @@ class Leaderboard(State):
 		# background
 		self.background = self.game.get_image('assets/backgrounds/victory.png', RES, RES/2)
 
-		self.car = StackedSprite(self.game, self.level, self.game.car_type, (WIDTH * 0.75, HALF_HEIGHT), 90)
+		self.car = StackedSprite(self.game, self.level, self.car, (WIDTH * 0.75, HALF_HEIGHT), 90)
 
 	def get_box(self, colour, alpha, pos):
 		size = (180 * SCALE, 13 * SCALE)
@@ -60,8 +61,9 @@ class Leaderboard(State):
 		return(surf, rect)
 
 	def get_leaderboard(self):
+
 		if self.state_from == 'Name Entry':
-			new_leaderboard_entry = [self.game.player_name, self.game.fastest_lap, self.game.track, self.game.car_type, self.game.reverse_direction]
+			new_leaderboard_entry = [self.game.player_name, self.game.fastest_lap, self.game.track, self.car, self.game.reverse_direction]
 			LEADERBOARD_DATA.append(new_leaderboard_entry)
 
 			with open('leaderboard.csv', 'a') as leaderboard_file:
@@ -81,6 +83,10 @@ class Leaderboard(State):
 		for entry in LEADERBOARD_DATA:
 			if self.game.track in entry: 
 				self.track_leaderboard.append(entry)
+
+		for index, j in enumerate(self.track_leaderboard):
+			del j[0] 
+			j.insert(0, index +1)
 
 		self.leaderboard_height = ((HEIGHT * 0.075) * len(self.track_leaderboard)) - HEIGHT
 

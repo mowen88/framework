@@ -15,6 +15,7 @@ class Menu(State):
 		self.level = Level(self.game, self.game.car_type)
 		self.track_leaderboard = []
 		self.state = ''
+		self.game.player_name = ''
 		self.alpha = 0
 
 		# fade out surf
@@ -67,7 +68,7 @@ class Menu(State):
 				if self.state == 'Race':
 					self.selections_menu.enter_state()
 				if self.state == 'Leaderboard':
-					Leaderboard(self.game, None, 'Menu').enter_state()
+					Leaderboard(self.game, self.level, self.game.car_type, 'Menu').enter_state()
 				if self.state == 'Quit':
 					self.game.running = False
 					self.game.playing = False

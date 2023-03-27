@@ -21,6 +21,7 @@ class CarTrackSelect(State):
 		#vars
 		self.laps = self.game
 
+
 		self.cars = list(CAR_DATA.keys())
 		self.tracks = list(TRACK_DATA.keys())
 		
@@ -28,10 +29,10 @@ class CarTrackSelect(State):
 		self.track_index = self.tracks[self.tracks.index(self.game.track)]
 		
 		
-		self.index = 0
-		self.car_str = self.cars[self.index]
+		self.car_index = 0
+		self.car_str = self.cars[self.car_index]
 
-		self.level = self.level = Level(self.game, self.car_str)
+		self.level = Level(self.game, self.car_str)
 
 		# fade out surf
 		self.fading_out = False
@@ -46,7 +47,7 @@ class CarTrackSelect(State):
 		self.background = self.game.get_image('assets/backgrounds/i-pace.png', RES, RES/2)
 
 		# import classes
-		self.car = StackedSprite(self.game, self.level, self.car_index, (WIDTH * 0.62, HEIGHT * 0.28), 90)
+		self.car = StackedSprite(self.game, level, self.car_str, (WIDTH * 0.62, HEIGHT * 0.28), 90)
 		self.track_surf = pygame.image.load(f'assets/tracks/{self.track_index}/minimap.png').convert_alpha()
 		self.track_surf = pygame.transform.scale(self.track_surf, (self.track_surf.get_width()/SCALE, self.track_surf.get_height()/SCALE))
 		self.track_rect = self.track_surf.get_rect(center = (self.track_box[1].centerx, self.track_box[1].centery - (HEIGHT * 0.1)))
@@ -93,11 +94,18 @@ class CarTrackSelect(State):
 
 				if ACTIONS['left_click'] and not self.fading_out:
 					if direction == 'left':
-						state = self.cars[0]
+						self.car_index -= 1
+						if self.car_index < 0:
+							self.car_index = len(self.cars)-1
 					else:
-						state = self.cars[1]
+						self.car_index += 1
+						if self.car_index > len(self.cars) -1:
+							self.car_index = 0
 
-					print(state)
+					state = self.cars[self.car_index]
+					self.car.kill()
+					self.car = StackedSprite(self.game, self.level, state, (WIDTH * 0.62, HEIGHT * 0.28), 90)
+
 				self.game.reset_keys()
 
 
@@ -121,14 +129,14 @@ class CarTrackSelect(State):
 					self.fading_out = True
 
 	def update(self):
-		self.car_str = self.cars[self.index]
+		self.car_str = self.cars[self.car_index]
 		self.car.update()
 		self.fadein()
 		if self.fading_out:
 			self.fadeout_alpha += 255//50
 			if self.fadeout_alpha >= 255:
 				if self.state == 'Race':
-					self.level.enter_state()
+					Level(self.game, self.car_str).enter_state()
 
 	def render(self, display):
 		display.blit(self.background[0], self.background[1])
@@ -159,7 +167,7 @@ class CarTrackSelect(State):
 		# self.right_black_icon.set_alpha(self.alpha)
 
 		# car arrows
-		self.game.render_text(self.car_index, WHITE, self.game.smaller_font, (self.car_box[1].centerx, self.car_box[1].bottom - (HEIGHT * 0.1)))
+		self.game.render_text(self.car_str, WHITE, self.game.smaller_font, (self.car_box[1].centerx, self.car_box[1].bottom - (HEIGHT * 0.1)))
 		self.render_arrow(WHITE, (self.car_box[1].left + (WIDTH * 0.03), self.car_box[1].centery), 'left', self.car_index)
 		self.render_arrow(WHITE, (self.car_box[1].right - (WIDTH * 0.03), self.car_box[1].centery), 'right', self.car_index)
 
