@@ -10,10 +10,11 @@ from gui import GUI
 from particles import Skidmarks, Dust, Shadow
 
 class Level(State):
-	def __init__(self, game):
+	def __init__(self, game, car):
 		State.__init__(self, game)
 
 		self.game = game
+		self.car = car
 		self.friction = 0.4
 		self.paused = False
 
@@ -29,7 +30,7 @@ class Level(State):
 		self.track = self.game.track
 		self.total_laps = self.game.total_laps
 		self.reverse_direction = self.game.reverse_direction
-		self.car_type = self.game.car_type
+		self.car_type = car
 
 		self.started_race = False
 		self.finished_race = False

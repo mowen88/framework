@@ -2,6 +2,7 @@ import pygame, csv
 
 from state import State
 from entity import StackedSprite
+from level import Level
 from leaderboard import Leaderboard
 from settings import *
 
@@ -11,7 +12,7 @@ class CarTrackSelect(State):
 	def __init__(self, game, level):
 		State.__init__(self, game)
 
-		self.level = level
+
 		self.track_leaderboard = []
 
 		self.state = ''
@@ -26,8 +27,11 @@ class CarTrackSelect(State):
 		self.car_index = self.cars[self.cars.index(self.game.car_type)]
 		self.track_index = self.tracks[self.tracks.index(self.game.track)]
 		
-		print(self.car_index.index(self.game.car_type))
-		print(self.car_index)
+		
+		self.index = 0
+		self.car_str = self.cars[self.index]
+
+		self.level = self.level = Level(self.game, self.car_str)
 
 		# fade out surf
 		self.fading_out = False
@@ -89,9 +93,11 @@ class CarTrackSelect(State):
 
 				if ACTIONS['left_click'] and not self.fading_out:
 					if direction == 'left':
-						print(state)
+						state = self.cars[0]
 					else:
-						print(state)
+						state = self.cars[1]
+
+					print(state)
 				self.game.reset_keys()
 
 
@@ -115,6 +121,7 @@ class CarTrackSelect(State):
 					self.fading_out = True
 
 	def update(self):
+		self.car_str = self.cars[self.index]
 		self.car.update()
 		self.fadein()
 		if self.fading_out:
@@ -169,6 +176,7 @@ class CarTrackSelect(State):
 		self.render_arrow(WHITE, (self.track_box[1].right - (WIDTH * 0.03), self.track_box[1].bottom - (HEIGHT * 0.1 + SCALE)), 'right', self.game.reverse_direction)
 		self.render_arrow(WHITE, (self.track_box[1].right - (WIDTH * 0.13), self.track_box[1].bottom - (HEIGHT * 0.1 + SCALE)), 'left', self.game.reverse_direction)
 
+		self.game.render_text(self.car_str, BLACK, self.game.small_font, RES/2)
 
 
 		display.blit(self.fade[0], self.fade[1])

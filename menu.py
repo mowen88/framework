@@ -1,8 +1,8 @@
 import pygame, csv
 
 from state import State
-from level import Level
 from selections_menu import CarTrackSelect
+from level import Level
 from leaderboard import Leaderboard
 from settings import *
 
@@ -12,7 +12,7 @@ class Menu(State):
 	def __init__(self, game, level):
 		State.__init__(self, game)
 
-		self.level = Level(self.game)
+		self.level = Level(self.game, self.game.car_type)
 		self.track_leaderboard = []
 		self.state = ''
 		self.alpha = 0
@@ -67,7 +67,7 @@ class Menu(State):
 				if self.state == 'Race':
 					self.selections_menu.enter_state()
 				if self.state == 'Leaderboard':
-					Leaderboard(self.game, self.level, 'Menu').enter_state()
+					Leaderboard(self.game, None, 'Menu').enter_state()
 				if self.state == 'Quit':
 					self.game.running = False
 					self.game.playing = False
