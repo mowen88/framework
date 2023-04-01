@@ -8,7 +8,7 @@ class Shadow(pygame.sprite.Sprite):
 		#self.sprite_type = sprite_type
 		self.game = game
 		self.level = level
-		self.original_image = pygame.image.load(f'assets/particles/shadows/{self.game.car_type}.png').convert_alpha()
+		self.original_image = pygame.image.load(f'assets/particles/shadows/{self.level.car_type}.png').convert_alpha()
 		self.image = self.original_image.copy()
 		self.original_image = pygame.transform.scale(self.original_image, (self.image.get_width() * SCALE, self.image.get_height() * SCALE))
 		self.rect = self.image.get_rect(center = pos)

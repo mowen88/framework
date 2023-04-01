@@ -28,20 +28,35 @@ class Leaderboard(State):
 		self.silver = pygame.image.load('assets/cups/silver.png').convert_alpha()
 		self.bronze = pygame.image.load('assets/cups/bronze.png').convert_alpha()
 
-		#text boxes
-		self.grey_box = self.get_box(BLACK, self.alpha, RES/2)
-		self.white_box = self.get_box(WHITE, 255, RES/2)
-		
-		# append new leaderboard entry if from name entry state...
-		self.get_leaderboard()
+		#car sprite
+		self.car_sprite = StackedSprite(self.game, self.level, self.car, (WIDTH * 0.75, HEIGHT * 0.55), 90)
 
+		#text boxes
+		self.grey_box = self.get_box(BLACK, self.alpha, (180 * SCALE, 13 * SCALE), RES/2)
+		self.car_sprite_box = self.get_box(BLACK, self.alpha, (WIDTH * 0.18, WIDTH * 0.18), self.car_sprite.rect.bottomright)
+		self.lap_record_box = self.get_box(BLACK, self.alpha, (WIDTH * 0.18, WIDTH * 0.18), (WIDTH * 0.8, HEIGHT * 0.65))
+		self.white_box = self.get_box(WHITE, 255, (180 * SCALE, 13 * SCALE), RES/2)
+		self.header_box = self.get_box(GREEN, 255, (180 * SCALE, 13 * SCALE), RES/2)
+		
 		# background
 		self.background = self.game.get_image('assets/backgrounds/victory.png', RES, RES/2)
 
-		self.car = StackedSprite(self.game, self.level, self.car, (WIDTH * 0.75, HALF_HEIGHT), 90)
 
-	def get_box(self, colour, alpha, pos):
-		size = (180 * SCALE, 13 * SCALE)
+		self.tracks = list(TRACK_DATA.keys())
+		self.track_index = 0
+		self.track_str = self.tracks[self.track_index]
+		self.track_surf = pygame.image.load(f'assets/tracks/{self.track_str}/minimap.png').convert_alpha()
+		self.track_surf = pygame.transform.scale(self.track_surf, (self.track_surf.get_width()/SCALE, self.track_surf.get_height()/SCALE))
+		self.track_rect = self.track_surf.get_rect(center = (WIDTH * 0.8, HEIGHT * 0.3))
+
+		# append new leaderboard entry if from name entry state...
+		if self.state_from == 'Name Entry':
+			self.get_leaderboard(self.level.track)
+		else:
+			self.get_leaderboard(self.track_str)
+
+
+	def get_box(self, colour, alpha, size, pos):
 		surf = pygame.Surface(size)
 		surf.fill(colour)
 		surf.set_alpha(alpha)
@@ -60,10 +75,51 @@ class Leaderboard(State):
 		rect = surf.get_rect(center = RES/2)
 		return(surf, rect)
 
-	def get_leaderboard(self):
+	def render_arrow(self, text_colour, pos, direction, state):
+		surf = pygame.Surface((WIDTH * 0.05, HEIGHT * 0.09))
+		colour = text_colour
+		rect = surf.get_rect(center = pos)
+		if direction == 'left':
+			self.game.render_text('<', text_colour, self.game.small_font, pos)
+		else:
+			self.game.render_text('>', text_colour, self.game.small_font, pos)
+
+		mx, my = pygame.mouse.get_pos()
+
+		if self.alpha >= 200:
+			if rect.collidepoint(mx, my):
+				pygame.draw.circle(self.game.screen, WHITE, (rect.centerx - 3, rect.centery + SCALE), 7 * SCALE)
+				if direction == 'left':
+					self.game.render_text('<', BLACK, self.game.small_font, pos)
+				else:
+					self.game.render_text('>', BLACK, self.game.small_font, pos)
+
+				if ACTIONS['left_click'] and not self.fading_out:
+
+					if direction == 'left':
+						self.track_index -= 1
+						if self.track_index < 0:
+							self.track_index = len(self.tracks)-1
+					else:
+						self.track_index += 1
+						if self.track_index > len(self.tracks) -1:
+							self.track_index = 0
+
+					state = self.tracks[self.track_index]
+
+					self.track_surf = pygame.image.load(f'assets/tracks/{state}/minimap.png').convert_alpha()
+					self.track_surf = pygame.transform.scale(self.track_surf, (self.track_surf.get_width()/SCALE, self.track_surf.get_height()/SCALE))
+					self.track_rect = self.track_surf.get_rect(center = (WIDTH * 0.8, HEIGHT * 0.3))
+				
+					self.track_leaderboard.clear()
+					self.get_leaderboard(state)
+
+				self.game.reset_keys()
+
+	def get_leaderboard(self, track):
 
 		if self.state_from == 'Name Entry':
-			new_leaderboard_entry = [self.game.player_name, self.game.fastest_lap, self.game.track, self.car, self.game.reverse_direction]
+			new_leaderboard_entry = [self.game.player_name, self.game.fastest_lap, track, self.car, self.game.reverse_direction]
 			LEADERBOARD_DATA.append(new_leaderboard_entry)
 
 			with open('leaderboard.csv', 'a') as leaderboard_file:
@@ -81,7 +137,7 @@ class Leaderboard(State):
 		#LEADERBOARD_DATA.sort(key = lambda LEADERBOARD_DATA: LEADERBOARD_DATA[2])
 
 		for entry in LEADERBOARD_DATA:
-			if self.game.track in entry: 
+			if track in entry: 
 				self.track_leaderboard.append(entry)
 
 		for index, j in enumerate(self.track_leaderboard):
@@ -129,7 +185,6 @@ class Leaderboard(State):
 		if self.alpha >= 200:
 			if rect.collidepoint(mx, my) or self.state == state:
 				pygame.draw.rect(self.game.screen, hover_colour, rect)
-				pygame.draw.rect(self.game.screen, button_colour, rect, SCALE//2)
 				self.game.render_text(state, button_colour, self.game.smaller_font, pos)
 				if pygame.mouse.get_pressed()[0] == 1 and not self.fading_out:
 					self.state = state
@@ -157,9 +212,9 @@ class Leaderboard(State):
 				self.game.screen.blit(self.white_box[0], (WIDTH * 0.3 - (self.white_box[0].get_width()/2), self.scroll + start_height + HEIGHT * 0.075 * row))
 				self.game.render_text(f'{index}   |   {name}   |   {lap}   |   {car}   |   {direction}', BLACK, self.game.even_smaller_font, (WIDTH * 0.3, (self.grey_box[0].get_height()/2) + self.scroll + start_height + HEIGHT * 0.075 * row))
 			
-			self.game.screen.blit(self.white_box[0], (WIDTH * 0.3 - (self.white_box[0].get_width()/2), 0))
-			pygame.draw.line(self.game.screen, BLACK, ((WIDTH * 0.3 - (self.white_box[0].get_width()/2), self.grey_box[0].get_height())), ((WIDTH * 0.3 + (self.grey_box[0].get_width()/2), self.grey_box[0].get_height())), SCALE//2)
-			self.game.render_text('Position  |   Name   |   Lap Time   |   Car   |    Track reversed?', BLACK, self.game.even_smaller_font, (WIDTH * 0.3, (self.grey_box[0].get_height()/2)))
+			self.game.screen.blit(self.header_box[0], (WIDTH * 0.3 - (self.header_box[0].get_width()/2), 0))
+			pygame.draw.line(self.game.screen, BLACK, ((WIDTH * 0.3 - (self.header_box[0].get_width()/2), self.header_box[0].get_height())), ((WIDTH * 0.3 + (self.grey_box[0].get_width()/2), self.header_box[0].get_height())), SCALE//2)
+			self.game.render_text('Position  |   Name   |   Lap Time   |   Car   |    Track reversed?', BLACK, self.game.even_smaller_font, (WIDTH * 0.3, (self.header_box[0].get_height()/2)))
 
 			# render cups for 1st, 2nd and 3rd
 			if self.alpha >= 200:
@@ -174,7 +229,13 @@ class Leaderboard(State):
 					self.game.screen.blit(self.bronze, (WIDTH * 0.3 + (self.grey_box[0].get_width()/2) - (4* SCALE) - self.bronze.get_width(), (self.grey_box[0].get_height()/SCALE) + self.scroll + start_height + HEIGHT * 0.075 * row))
 
 	def update(self):
-		self.car.update()
+		# change track images, needs top be in update so click action works
+		self.track_str = self.tracks[self.track_index]
+		if self.state_from == 'Menu':
+			self.render_arrow(WHITE, (self.track_rect.centerx - (WIDTH * 0.15), self.track_rect.centery), 'left', self.track_index)
+			self.render_arrow(WHITE, (self.track_rect.centerx + (WIDTH * 0.15), self.track_rect.centery), 'right', self.track_index)
+
+		self.car_sprite.update()
 		self.scrolling_logic()
 		self.fadein()
 
@@ -189,19 +250,38 @@ class Leaderboard(State):
 					self.prev_state.exit_state()
 					self.prev_state.exit_state()
 					self.prev_state.exit_state()
-					self.level.exit_state()
+					self.prev_state.level.exit_state()
 		
 	def render(self, display):
-		display.blit(self.background[0], self.background[1])
-	
+		#display.blit(self.background[0], self.background[1])
+		display.fill(GREEN)
+
+		display.blit(self.track_surf, self.track_rect)
+		self.game.render_text(self.track_str, WHITE, self.game.smaller_font, (self.track_rect.centerx, HEIGHT * 0.1))
+
+		#track arrows
+		if self.state_from == 'Menu':
+			self.render_arrow(WHITE, (self.track_rect.centerx - (WIDTH * 0.15), self.track_rect.centery), 'left', self.track_index)
+			self.render_arrow(WHITE, (self.track_rect.centerx + (WIDTH * 0.15), self.track_rect.centery), 'right', self.track_index)
+		
 		self.show_list_of_entries()
 		
-		self.render_button('Main Menu', WHITE, BLACK, WHITE, (WIDTH * 0.8, HEIGHT * 0.8))
 
-		# show car
 		if self.state_from == 'Name Entry':
-			display.blit(self.car.image, self.car.pos)
-			self.car.angle += 2
+			self.render_button('Main Menu', WHITE, BLACK, WHITE, (self.car_sprite_box[1].centerx, HEIGHT * 0.9))
+
+			display.blit(self.car_sprite_box[0], self.car_sprite_box[1])
+			self.car_sprite_box[0].set_alpha(self.alpha)
+			
+			display.blit(self.car_sprite.image, self.car_sprite.pos)
+			self.car_sprite.angle += 2
+
+		else:
+			self.render_button('Main Menu', WHITE, BLACK, WHITE, (WIDTH * 0.8, HEIGHT * 0.9))
+
+			display.blit(self.lap_record_box[0], self.lap_record_box[1])
+			self.lap_record_box[0].set_alpha(self.alpha)
+
 
 		# fadeout and next state
 		display.blit(self.fade[0], self.fade[1])

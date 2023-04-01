@@ -10,11 +10,12 @@ from gui import GUI
 from particles import Skidmarks, Dust, Shadow
 
 class Level(State):
-	def __init__(self, game, car):
+	def __init__(self, game, car, track):
 		State.__init__(self, game)
 
 		self.game = game
-		self.car = car
+		self.car_type = car
+		self.track = track
 		self.friction = 0.4
 		self.paused = False
 
@@ -27,11 +28,9 @@ class Level(State):
 		self.fade_rect = self.fade_surf.get_rect(center = RES/2)
 
 		self.player_name = self.game.player_name
-		self.track = self.game.track
 		self.total_laps = self.game.total_laps
 		self.reverse_direction = self.game.reverse_direction
-		self.car_type = car
-
+		
 		self.started_race = False
 		self.finished_race = False
 		self.start_pos = TRACK_DATA[self.track]['start_pos']
@@ -73,7 +72,7 @@ class Level(State):
 		self.all_sprites.add(self.player)
 
 		# import other classes
-		self.pause_menu = PauseMenu(self.game)
+		self.pause_menu = PauseMenu(self.game, self.car_type, self.track)
 		self.timer = Timer(self.game)
 		self.GUI = GUI(self.game, self)
 		self.shadow = Shadow(self.game, self, self.floor_layer, (self.player.rect.x, self.player.rect.y + (2* SCALE)))
@@ -208,7 +207,7 @@ class Level(State):
 	def toggle_pause(self):
 		if ACTIONS['space']:
 			self.timer.stopstart()
-			new_state = PauseMenu(self.game)
+			new_state = PauseMenu(self.game, self.car_type, self.track)
 			new_state.enter_state()
 		self.game.reset_keys()
 
@@ -231,7 +230,8 @@ class Level(State):
 		
 		display.fill(BLUE)
 		self.all_sprites.offset_draw(self.player)
-		self.game.render_text(str(f'{self.game.clock.get_fps(): .1f}'), WHITE, self.game.big_font, (HALF_WIDTH /1.5, HEIGHT * 0.9))
+
+		#self.game.render_text(str(f'{self.game.clock.get_fps(): .1f}'), WHITE, self.game.big_font, (HALF_WIDTH /1.5, HEIGHT * 0.9))
 		
 		self.GUI.update()
 

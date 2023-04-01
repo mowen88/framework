@@ -3,9 +3,11 @@ from name_entry import NameEntry
 from settings import *
 
 class RaceOver:
-	def __init__(self, game):
+	def __init__(self, game, car, track):
 
 		self.game = game
+		self.car = car
+		self.track = track
 		self.alpha = 0
 		self.state = ''
 
@@ -77,7 +79,8 @@ class RaceOver:
 				if self.state == 'Continue':
 					NameEntry(self.game, level).enter_state()
 				else:
-					self.game.create_level()
+					level.exit_state()
+					self.game.create_level(self.car, self.track)
 			
 		
 

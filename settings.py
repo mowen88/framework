@@ -10,7 +10,7 @@ FPS = 60
 SCALE = 4
 
 # game fonts
-FONT = 'font/JLREmeric-Regular.ttf'
+FONT = 'font/Pokemon Classic.ttf'
 FONT_2 = 'font/minimal/Minimal.ttf'
 
 # game colours
@@ -51,7 +51,7 @@ LEADERBOARD_DATA = []
 
 # car specs
 TRACK_DATA = {
-	'track_1':{'checkpoints':{
+	'Small Track':{'checkpoints':{
 				   0:[[17.5*16*SCALE, 20*16*SCALE],'hori_checkpoint'],
 				   1:[[34*16*SCALE, 4.5*16*SCALE],'vert_checkpoint'],
 				   2:[[45.5*16*SCALE, 14.5*16*SCALE], 'vert_checkpoint'],
@@ -71,7 +71,7 @@ TRACK_DATA = {
 				   'name': '???'
 			   }
 			   },
-    'track_2':{'checkpoints':{
+    'Big Track':{'checkpoints':{
 				   0:[[55.5*16*SCALE, 24.5*16*SCALE],'vert_checkpoint'],
 				   1:[[47.5*16*SCALE, 41.5*16*SCALE],'hori_checkpoint'],
 				   2:[[37.5*16*SCALE, 41.5*16*SCALE],'hori_checkpoint'],

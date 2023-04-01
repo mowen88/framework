@@ -12,7 +12,7 @@ class Menu(State):
 	def __init__(self, game, level):
 		State.__init__(self, game)
 
-		self.level = Level(self.game, self.game.car_type)
+		self.level = Level(self.game, self.game.car_type, self.game.track)
 		self.track_leaderboard = []
 		self.state = ''
 		self.game.player_name = ''
@@ -74,7 +74,9 @@ class Menu(State):
 					self.game.playing = False
 
 	def render(self, display):
-		display.blit(self.background[0], self.background[1])
+		#display.blit(self.background[0], self.background[1])
+		display.fill(BLUE)
+
 
 		self.game.render_text('Main Menu', WHITE, self.game.bigger_font, (HALF_WIDTH, HEIGHT /4))
 
@@ -85,6 +87,7 @@ class Menu(State):
 
 		display.blit(self.fade[0], self.fade[1])
 		self.fade[0].set_alpha(self.fadeout_alpha)
+
 
 
 		

@@ -21,18 +21,19 @@ class CarTrackSelect(State):
 		#vars
 		self.laps = self.game
 
-
 		self.cars = list(CAR_DATA.keys())
 		self.tracks = list(TRACK_DATA.keys())
 		
 		self.car_index = self.cars[self.cars.index(self.game.car_type)]
 		self.track_index = self.tracks[self.tracks.index(self.game.track)]
 		
-		
 		self.car_index = 0
-		self.car_str = self.cars[self.car_index]
+		self.track_index = 0
 
-		self.level = Level(self.game, self.car_str)
+		self.car_str = self.cars[self.car_index]
+		self.track_str = self.tracks[self.track_index]
+
+		self.level = Level(self.game, self.car_str, self.track_str)
 
 		# fade out surf
 		self.fading_out = False
@@ -48,7 +49,7 @@ class CarTrackSelect(State):
 
 		# import classes
 		self.car = StackedSprite(self.game, level, self.car_str, (WIDTH * 0.62, HEIGHT * 0.28), 90)
-		self.track_surf = pygame.image.load(f'assets/tracks/{self.track_index}/minimap.png').convert_alpha()
+		self.track_surf = pygame.image.load(f'assets/tracks/{self.track_str}/minimap.png').convert_alpha()
 		self.track_surf = pygame.transform.scale(self.track_surf, (self.track_surf.get_width()/SCALE, self.track_surf.get_height()/SCALE))
 		self.track_rect = self.track_surf.get_rect(center = (self.track_box[1].centerx, self.track_box[1].centery - (HEIGHT * 0.1)))
 
@@ -86,25 +87,42 @@ class CarTrackSelect(State):
 
 		if self.alpha >= 200:
 			if rect.collidepoint(mx, my):
-				pygame.draw.circle(self.game.screen, WHITE, (rect.centerx, rect.centery + SCALE), 7 * SCALE)
+				pygame.draw.circle(self.game.screen, WHITE, (rect.centerx - 3, rect.centery + SCALE), 7 * SCALE)
 				if direction == 'left':
 					self.game.render_text('<', BLACK, self.game.small_font, pos)
 				else:
 					self.game.render_text('>', BLACK, self.game.small_font, pos)
 
 				if ACTIONS['left_click'] and not self.fading_out:
-					if direction == 'left':
-						self.car_index -= 1
-						if self.car_index < 0:
-							self.car_index = len(self.cars)-1
-					else:
-						self.car_index += 1
-						if self.car_index > len(self.cars) -1:
-							self.car_index = 0
+					if rect.x > HALF_WIDTH:
+						if direction == 'left':
+							self.car_index -= 1
+							if self.car_index < 0:
+								self.car_index = len(self.cars)-1
+						else:
+							self.car_index += 1
+							if self.car_index > len(self.cars) -1:
+								self.car_index = 0
 
-					state = self.cars[self.car_index]
-					self.car.kill()
-					self.car = StackedSprite(self.game, self.level, state, (WIDTH * 0.62, HEIGHT * 0.28), 90)
+						state = self.cars[self.car_index]
+						self.car.kill()
+						self.car = StackedSprite(self.game, self.level, state, (WIDTH * 0.62, HEIGHT * 0.28), 90)
+
+					else:
+						if direction == 'left':
+							self.track_index -= 1
+							if self.track_index < 0:
+								self.track_index = len(self.tracks)-1
+						else:
+							self.track_index += 1
+							if self.track_index > len(self.tracks) -1:
+								self.track_index = 0
+
+						state = self.tracks[self.track_index]
+
+						self.track_surf = pygame.image.load(f'assets/tracks/{state}/minimap.png').convert_alpha()
+						self.track_surf = pygame.transform.scale(self.track_surf, (self.track_surf.get_width()/SCALE, self.track_surf.get_height()/SCALE))
+						self.track_rect = self.track_surf.get_rect(center = (self.track_box[1].centerx, self.track_box[1].centery - (HEIGHT * 0.1)))
 
 				self.game.reset_keys()
 
@@ -130,17 +148,19 @@ class CarTrackSelect(State):
 
 	def update(self):
 		self.car_str = self.cars[self.car_index]
+		self.track_str = self.tracks[self.track_index]
 		self.car.update()
+
 		self.fadein()
 		if self.fading_out:
 			self.fadeout_alpha += 255//50
 			if self.fadeout_alpha >= 255:
 				if self.state == 'Race':
-					Level(self.game, self.car_str).enter_state()
+					Level(self.game, self.car_str, self.track_str).enter_state()
 
 	def render(self, display):
-		display.blit(self.background[0], self.background[1])
-
+		#display.blit(self.background[0], self.background[1])
+		display.fill(YELLOW)
 
 		display.blit(self.track_box[0], self.track_box[1])
 		self.track_box[0].set_alpha(self.alpha)
@@ -155,16 +175,9 @@ class CarTrackSelect(State):
 		display.blit(self.track_surf, self.track_rect)
 		
 		# show car
-		
 		self.car.image = pygame.transform.scale(self.car.image, (self.car.image.get_width()*1.5, self.car.image.get_height()*1.5))
 		display.blit(self.car.image, self.car.pos)
 		self.car.angle += 2
-
-		# display.blit(self.left_black_icon[0], (WIDTH * 0.85, HEIGHT * 0.4))
-		# self.left_black_icon[0].set_alpha(self.alpha)
-		# self.right_black_icon = pygame.transform.flip(self.left_black_icon[0], True, False)
-		# display.blit(self.right_black_icon, (WIDTH * 0.55, HEIGHT * 0.4))
-		# self.right_black_icon.set_alpha(self.alpha)
 
 		# car arrows
 		self.game.render_text(self.car_str, WHITE, self.game.smaller_font, (self.car_box[1].centerx, self.car_box[1].bottom - (HEIGHT * 0.1)))
@@ -172,7 +185,7 @@ class CarTrackSelect(State):
 		self.render_arrow(WHITE, (self.car_box[1].right - (WIDTH * 0.03), self.car_box[1].centery), 'right', self.car_index)
 
 		#track arrows
-		self.game.render_text(self.track_index, WHITE, self.game.smaller_font, (self.track_box[1].centerx, self.track_box[1].bottom - (HEIGHT * 0.3)))
+		self.game.render_text(self.track_str, WHITE, self.game.smaller_font, (self.track_box[1].centerx, self.track_box[1].bottom - (HEIGHT * 0.3)))
 		self.render_arrow(WHITE, (self.track_box[1].left + (WIDTH * 0.03), self.track_box[1].top + (HEIGHT * 0.3)), 'left', self.track_index)
 		self.render_arrow(WHITE, (self.track_box[1].right - (WIDTH * 0.03), self.track_box[1].top + (HEIGHT * 0.3)), 'right', self.track_index)
 
@@ -183,9 +196,6 @@ class CarTrackSelect(State):
 		self.game.render_text('Reversed?', WHITE, self.game.smaller_font, (self.track_box[1].left + (WIDTH * 0.1), self.track_box[1].bottom - (HEIGHT * 0.1)))
 		self.render_arrow(WHITE, (self.track_box[1].right - (WIDTH * 0.03), self.track_box[1].bottom - (HEIGHT * 0.1 + SCALE)), 'right', self.game.reverse_direction)
 		self.render_arrow(WHITE, (self.track_box[1].right - (WIDTH * 0.13), self.track_box[1].bottom - (HEIGHT * 0.1 + SCALE)), 'left', self.game.reverse_direction)
-
-		self.game.render_text(self.car_str, BLACK, self.game.small_font, RES/2)
-
 
 		display.blit(self.fade[0], self.fade[1])
 		self.fade[0].set_alpha(self.fadeout_alpha)

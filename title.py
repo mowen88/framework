@@ -45,7 +45,6 @@ class Title(State):
 		if self.alpha >= 200:
 			if rect.collidepoint(mx, my) or self.state == state:
 				pygame.draw.rect(self.game.screen, hover_colour, rect)
-				pygame.draw.rect(self.game.screen, button_colour, rect, SCALE//2)
 				self.game.render_text(state, button_colour, self.game.smaller_font, pos)
 				if pygame.mouse.get_pressed()[0] == 1 and not self.fading_out:
 					self.state = state
@@ -65,12 +64,16 @@ class Title(State):
 		# self.game.reset_keys()
 
 	def render(self, display):
-		display.blit(self.background[0], self.background[1])
+		#display.blit(self.background[0], self.background[1])
+		display.fill(ORANGE)
 
-		self.game.render_text('Title here...', PURPLE, self.game.bigger_font, (HALF_WIDTH/2, HEIGHT /3))
+		self.game.render_text('Racing Game', WHITE, self.game.bigger_font, (HALF_WIDTH, HEIGHT * 0.4))
 
-		self.render_button('Start Game', WHITE, BLACK, WHITE, (HALF_WIDTH/2, HALF_HEIGHT))
+		self.render_button('Start Game', WHITE, BLACK, WHITE, (HALF_WIDTH, HEIGHT *0.55))
 		
 		display.blit(self.fade[0], self.fade[1])
 		self.fade[0].set_alpha(self.fadeout_alpha)
+
+
+
 

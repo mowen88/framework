@@ -5,6 +5,7 @@ from os import walk
 from settings import *
 from title import Title
 from level import Level
+from leaderboard import Leaderboard 
 
 class Game():
 	def __init__(self):
@@ -33,18 +34,18 @@ class Game():
 		self.stack = []
 
 		#font
-		self.small_font = pygame.font.Font(FONT, 50)
-		self.bigger_font = pygame.font.Font(FONT, 70)
-		self.smaller_font = pygame.font.Font(FONT, 30)
-		self.even_smaller_font = pygame.font.Font(FONT, 20)
-		self.big_font = pygame.font.Font(FONT, 40)
+		self.small_font = pygame.font.Font(FONT, 30)
+		self.bigger_font = pygame.font.Font(FONT, 42)
+		self.smaller_font = pygame.font.Font(FONT, 18)
+		self.even_smaller_font = pygame.font.Font(FONT, 12)
+		self.big_font = pygame.font.Font(FONT, 24)
 
 		self.get_leaderboard()
 		# print(LEADERBOARD_DATA)
 
 		self.player_name = ''
 		self.name_entry_active = False
-		self.track = 'track_2'
+		self.track = list(TRACK_DATA.keys())[0]
 		self.fastest_lap = None
 		self.total_laps = 1
 		self.reverse_direction = True
@@ -52,9 +53,8 @@ class Game():
 
 		self.load_states() 
 
-	def create_level(self):
-		new_state = Level(self)
-		new_state.enter_state()
+	def create_level(self, car, track):
+		Level(self, car, track).enter_state()
 
 	def get_events(self):
 		for event in pygame.event.get():
@@ -177,7 +177,6 @@ class Game():
 			for index, row in enumerate(leaderboard):
 				if row:
 					LEADERBOARD_DATA.append(row)
-
 
 	def run(self):
 		self.clock.tick(FPS)

@@ -3,10 +3,12 @@ from state import State
 from settings import *
 
 class PauseMenu(State):
-	def __init__(self, game):
+	def __init__(self, game, car, track):
 		State.__init__(self, game)
 
 		self.game = game
+		self.car = car
+		self.track = track
 	
 		# button conditions, fade in and state
 		self.state = ''
@@ -46,7 +48,7 @@ class PauseMenu(State):
 					elif self.state == 'Retry':
 						self.prev_state.exit_state()
 						self.exit_state()
-						self.game.create_level()
+						self.game.create_level(self.car, self.track)
 					else:
 						self.prev_state.timer.stopstart()
 						self.exit_state()

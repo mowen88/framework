@@ -15,12 +15,6 @@ class NameEntry(State):
 		self.fading = False
 		self.no_name_entered = False
 
-		#font
-		self.small_font = pygame.font.Font(FONT, 50)
-		self.big_font = pygame.font.Font(FONT, 70)
-		self.smaller_font = pygame.font.Font(FONT, 30)
-		self.bigger_font = pygame.font.Font(FONT, 40)
-
 		#box
 		self.box_surf = pygame.Surface(RES/2)
 		self.box_surf.fill(BLACK)
@@ -63,14 +57,9 @@ class NameEntry(State):
 				self.continue_colour = WHITE
 				self.restart_colour = WHITE
 
-			self.render_text('Continue', self.continue_colour, self.smaller_font, (self.continue_button_rect.center))
-			self.render_text('Restart', self.restart_colour, self.smaller_font, (self.restart_button_rect.center))
+			self.game.render_text('Continue', self.continue_colour, self.game.smaller_font, (self.continue_button_rect.center))
+			self.game.render_text('Restart', self.restart_colour, self.game.smaller_font, (self.restart_button_rect.center))
 
-
-	def render_text(self, text, colour, font, pos):
-		surf = font.render(str(text), True, colour)
-		rect = surf.get_rect(center = pos)
-		self.game.screen.blit(surf, rect)
 
 	def update(self):
 		self.game.player_name = re.sub(r"^\s+", "", self.game.player_name, flags=re.UNICODE)
@@ -85,7 +74,7 @@ class NameEntry(State):
 				self.game.name_entry_active = False
 
 				# pass 'name entry' to leaderboard so it can append and show the new entry
-				Leaderboard(self.game, self.level, self.level.car, 'Name Entry').enter_state()
+				Leaderboard(self.game, self.level, self.level.car_type, 'Name Entry').enter_state()
 
 		self.game.reset_keys()	
 
@@ -99,10 +88,10 @@ class NameEntry(State):
 		if self.alpha >= 200:
 			self.alpha = 200
 			self.game.name_entry_active = True
-		self.render_text(self.game.player_name, WHITE, self.small_font, (HALF_WIDTH, self.box_rect.top + self.box_surf.get_height()*0.66))
-		self.render_text('Enter your name', WHITE, self.small_font, (HALF_WIDTH, self.box_rect.top + self.box_surf.get_height()*0.33))
+		self.game.render_text(self.game.player_name, WHITE, self.game.small_font, (HALF_WIDTH, self.box_rect.top + self.box_surf.get_height()*0.66))
+		self.game.render_text('Enter your name', WHITE, self.game.small_font, (HALF_WIDTH, self.box_rect.top + self.box_surf.get_height()*0.33))
 		pygame.draw.line(self.game.screen, WHITE, (HALF_WIDTH - 30 * SCALE, self.box_rect.top + self.box_surf.get_height()*0.75), (HALF_WIDTH + 30 * SCALE, self.box_rect.top + self.box_surf.get_height()*0.75), SCALE)
 
 		if self.no_name_entered:
-			self.render_text('Enter a name!', PINK, self.small_font, (HALF_WIDTH, self.box_rect.top + self.box_surf.get_height()*0.9))
+			self.game.render_text('Enter a name!', PINK, self.game.small_font, (HALF_WIDTH, self.box_rect.top + self.box_surf.get_height()*0.9))
 
