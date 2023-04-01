@@ -49,7 +49,7 @@ class Game():
 		self.fastest_lap = None
 		self.total_laps = 1
 		self.reverse_direction = True
-		self.car_type = 'xjr13'
+		self.car_type = list(CAR_DATA.keys())[0]
 
 		self.load_states() 
 
