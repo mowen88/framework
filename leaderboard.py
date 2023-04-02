@@ -38,10 +38,9 @@ class Leaderboard(State):
 		self.car_sprite_box = self.get_box(BLACK, self.alpha, (WIDTH * 0.18, WIDTH * 0.18), self.car_sprite.rect.bottomright)
 		self.lap_record_box = self.get_box(BLACK, self.alpha, (WIDTH * 0.18, WIDTH * 0.18), (WIDTH * 0.8, HEIGHT * 0.65))
 		self.white_box = self.get_box(WHITE, 255, (180 * SCALE, 13 * SCALE), RES/2)
-		self.header_box = self.get_box(GREEN, 255, (180 * SCALE, 13 * SCALE), RES/2)
 		
 		# background
-		self.background = self.game.get_image('assets/backgrounds/victory.png', RES, RES/2)
+		self.background = self.game.get_image('assets/backgrounds/spots5.png', RES, RES/2)
 
 
 		self.tracks = list(TRACK_DATA.keys())
@@ -216,9 +215,9 @@ class Leaderboard(State):
 				self.game.screen.blit(self.white_box[0], (WIDTH * 0.3 - (self.white_box[0].get_width()/2), self.scroll + start_height + HEIGHT * 0.075 * row))
 				self.game.render_text(f'{index}    |    {name}    |    {lap}    |    {car}    |    {direction}', BLACK, self.game.even_smaller_font, (WIDTH * 0.3, (self.grey_box[0].get_height()/2) + self.scroll + start_height + HEIGHT * 0.075 * row))
 			
-			self.game.screen.blit(self.header_box[0], (WIDTH * 0.3 - (self.header_box[0].get_width()/2), 0))
-			#pygame.draw.line(self.game.screen, WHITE, ((WIDTH * 0.3 - (self.header_box[0].get_width()/2), self.header_box[0].get_height())), ((WIDTH * 0.3 + (self.grey_box[0].get_width()/2), self.header_box[0].get_height())), SCALE//2)
-			self.game.render_text('Position   |    Name    |    Lap Time    |   Car    |     Track reversed?', WHITE, self.game.even_smaller_font, (WIDTH * 0.3, (self.header_box[0].get_height()/2)))
+			self.game.screen.blit(self.white_box[0], (WIDTH * 0.3 - (self.white_box[0].get_width()/2), 0))
+			#pygame.draw.line(self.game.screen, WHITE, ((WIDTH * 0.3 - (self.white_box[0].get_width()/2), self.white_box[0].get_height())), ((WIDTH * 0.3 + (self.white_box[0].get_width()/2), self.white_box[0].get_height())), SCALE//2)
+			self.game.render_text('Position   |    Name    |    Lap Time    |   Car    |     Track reversed?', BLACK, self.game.even_smaller_font, (WIDTH * 0.3, (self.white_box[0].get_height()/2)))
 
 			# render cups for 1st, 2nd and 3rd
 			if self.alpha >= 200:
@@ -259,11 +258,10 @@ class Leaderboard(State):
 					self.prev_state.level.exit_state()
 		
 	def render(self, display):
-		#display.blit(self.background[0], self.background[1])
-		display.fill(GREEN)
+		display.blit(self.background[0], self.background[1])
 
 		display.blit(self.track_surf, self.track_rect)
-		self.game.render_text(self.track_str, WHITE, self.game.smaller_font, (self.track_rect.centerx, HEIGHT * 0.1))
+		self.game.render_text(self.track_str, WHITE, self.game.small_font, (self.track_rect.centerx, HEIGHT * 0.1))
 
 		#track arrows
 		if self.state_from == 'Menu':

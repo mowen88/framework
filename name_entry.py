@@ -34,6 +34,9 @@ class NameEntry(State):
 		self.restart_button_surf.set_alpha(self.alpha)
 		self.restart_button_rect = self.restart_button_surf.get_rect(center = (WIDTH * 0.8, HEIGHT * 0.4))
 
+		# bg
+		self.background = self.game.get_image('assets/backgrounds/spots6.png', RES, RES/2)
+
 	def hover_and_click(self, display):
 		mouse = pygame.mouse.get_pressed(num_buttons=5)
 
@@ -79,7 +82,7 @@ class NameEntry(State):
 		self.game.reset_keys()	
 
 	def render(self, display):
-		display.fill(WHITE)
+		display.blit(self.background[0], self.background[1])
 
 		display.blit(self.box_surf, self.box_rect)
 		self.box_surf.set_alpha(self.alpha)

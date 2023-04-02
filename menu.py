@@ -4,6 +4,7 @@ from state import State
 from selections_menu import CarTrackSelect
 from level import Level
 from leaderboard import Leaderboard
+from controls import Controls
 from settings import *
 
 #from zone import Zone
@@ -24,7 +25,7 @@ class Menu(State):
 		self.fade = self.fadeout(WHITE, self.fadeout_alpha)
 
 		# background
-		self.background = self.game.get_image('assets/backgrounds/i-pace.png', RES, RES/2)
+		self.background = self.game.get_image('assets/backgrounds/spots2.png', RES, RES/2)
 
 		self.selections_menu = CarTrackSelect(self.game, self.level)
 
@@ -69,14 +70,14 @@ class Menu(State):
 					self.selections_menu.enter_state()
 				if self.state == 'Leaderboard':
 					Leaderboard(self.game, self.level, self.game.car_type, 'Menu').enter_state()
+				if self.state == 'Controls':
+					Controls(self.game).enter_state()
 				if self.state == 'Quit':
 					self.game.running = False
 					self.game.playing = False
 
 	def render(self, display):
-		#display.blit(self.background[0], self.background[1])
-		display.fill(BLUE)
-
+		display.blit(self.background[0], self.background[1])
 
 		self.game.render_text('Main Menu', WHITE, self.game.bigger_font, (HALF_WIDTH, HEIGHT /4))
 

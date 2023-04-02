@@ -65,7 +65,7 @@ class GUI:
 
 		# render current lap
 		if not self.level.finished_race:
-			self.render_text("Current Lap", WHITE, self.game.big_font, (WIDTH * 0.5, HEIGHT * 0.04), True)
+			self.render_text("Current Lap", WHITE, self.game.small_font, (WIDTH * 0.5, HEIGHT * 0.04), True)
 			self.render_text(f"{self.level.timer.get_elapsed_time()}", WHITE, self.game.bigger_font, (WIDTH * 0.39, HEIGHT * 0.1), False)
 		
 		# render laps remaining

@@ -34,11 +34,10 @@ class Game():
 		self.stack = []
 
 		#font
-		self.small_font = pygame.font.Font(FONT, 30)
 		self.bigger_font = pygame.font.Font(FONT, 42)
+		self.small_font = pygame.font.Font(FONT, 30)
 		self.smaller_font = pygame.font.Font(FONT, 18)
 		self.even_smaller_font = pygame.font.Font(FONT, 12)
-		self.big_font = pygame.font.Font(FONT, 24)
 
 		self.get_leaderboard()
 

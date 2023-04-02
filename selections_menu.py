@@ -45,7 +45,7 @@ class CarTrackSelect(State):
 		self.car_box = self.get_box((WIDTH * 0.35, HEIGHT * 0.6), BLACK, self.alpha, (WIDTH * 0.7, HEIGHT * 0.4))
 
 		# background
-		self.background = self.game.get_image('assets/backgrounds/i-pace.png', RES, RES/2)
+		self.background = self.game.get_image('assets/backgrounds/spots3.png', RES, RES/2)
 
 		# import classes
 		self.car = StackedSprite(self.game, level, self.car_str, (WIDTH * 0.62, HEIGHT * 0.28), 90)
@@ -174,16 +174,15 @@ class CarTrackSelect(State):
 					Level(self.game, self.car_str, self.track_str).enter_state()
 
 	def render(self, display):
-		#display.blit(self.background[0], self.background[1])
-		display.fill(YELLOW)
-
+		display.blit(self.background[0], self.background[1])
+		
 		display.blit(self.track_box[0], self.track_box[1])
 		self.track_box[0].set_alpha(self.alpha)
 		display.blit(self.car_box[0], self.car_box[1])
 		self.car_box[0].set_alpha(self.alpha)
 
-		self.game.render_text('Track Select', WHITE, self.game.big_font, (WIDTH * 0.3, HEIGHT * 0.2))
-		self.game.render_text('Car Select', WHITE, self.game.big_font, (WIDTH * 0.7, HEIGHT * 0.2))
+		self.game.render_text('Track Select', WHITE, self.game.small_font, (WIDTH * 0.3, HEIGHT * 0.2))
+		self.game.render_text('Car Select', WHITE, self.game.small_font, (WIDTH * 0.7, HEIGHT * 0.2))
 		self.render_button('Go To Race', WHITE, BLACK, WHITE, (WIDTH * 0.7, HEIGHT * 0.825))
 
 		# show track

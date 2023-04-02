@@ -17,7 +17,7 @@ class Title(State):
 		self.fade = self.fadeout(WHITE, self.fadeout_alpha)
 
 		# bg
-		self.background = self.game.get_image('assets/backgrounds/gen3_front.png', RES, RES/2)
+		self.background = self.game.get_image('assets/backgrounds/spots.png', RES, RES/2)
 
 	def fadein(self):
 		self.alpha += 5
@@ -64,9 +64,8 @@ class Title(State):
 		# self.game.reset_keys()
 
 	def render(self, display):
-		#display.blit(self.background[0], self.background[1])
-		display.fill(ORANGE)
-
+		display.blit(self.background[0], self.background[1])
+		
 		self.game.render_text('Racing Game', WHITE, self.game.bigger_font, (HALF_WIDTH, HEIGHT * 0.4))
 
 		self.render_button('Start Game', WHITE, BLACK, WHITE, (HALF_WIDTH, HEIGHT *0.55))
