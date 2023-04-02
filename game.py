@@ -41,13 +41,13 @@ class Game():
 		self.big_font = pygame.font.Font(FONT, 24)
 
 		self.get_leaderboard()
-		# print(LEADERBOARD_DATA)
 
 		self.player_name = ''
 		self.name_entry_active = False
 		self.track = list(TRACK_DATA.keys())[0]
 		self.fastest_lap = None
 		self.total_laps = 1
+		self.max_allowed_laps = 25
 		self.reverse_direction = False
 		self.car_type = list(CAR_DATA.keys())[0]
 
@@ -179,7 +179,6 @@ class Game():
 					LEADERBOARD_DATA.append(row)
 
 	def run(self):
-		print(self.stack)
 		self.clock.tick(FPS)
 		self.get_events()
 		#self.get_time()

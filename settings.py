@@ -1,7 +1,7 @@
 import pygame
 
 # screen
-RES = WIDTH, HEIGHT = pygame.math.Vector2(1280, 720)
+RES = WIDTH, HEIGHT = pygame.math.Vector2(1600, 900)
 HALF_WIDTH, HALF_HEIGHT = RES / 2
 #HALF_HEIGHT = RES[1] / 2
 #CENTRE = HALF_WIDTH, HALF_HEIGHT = RES // 2

@@ -108,7 +108,7 @@ class CarTrackSelect(State):
 						self.car.kill()
 						self.car = StackedSprite(self.game, self.level, state, (WIDTH * 0.62, HEIGHT * 0.28), 90)
 
-					else:
+					elif rect.x < HALF_WIDTH and rect.y < HALF_HEIGHT:
 						if direction == 'left':
 							self.track_index -= 1
 							if self.track_index < 0:
@@ -123,6 +123,21 @@ class CarTrackSelect(State):
 						self.track_surf = pygame.image.load(f'assets/tracks/{state}/minimap.png').convert_alpha()
 						self.track_surf = pygame.transform.scale(self.track_surf, (self.track_surf.get_width()/SCALE, self.track_surf.get_height()/SCALE))
 						self.track_rect = self.track_surf.get_rect(center = (self.track_box[1].centerx, self.track_box[1].centery - (HEIGHT * 0.1)))
+
+					elif rect.x < HALF_WIDTH and rect.y > HALF_HEIGHT and rect.y < (HEIGHT * 0.7):
+						if direction == 'left':
+							self.game.total_laps -= 1
+							if self.game.total_laps < 1:
+								self.game.total_laps = 1
+						else:
+							self.game.total_laps += 1
+							if self.game.total_laps > self.game.max_allowed_laps:
+								self.game.total_laps = self.game.max_allowed_laps
+
+					else:
+						self.game.reverse_direction = not self.game.reverse_direction
+
+						print(self.game.reverse_direction)
 
 				self.game.reset_keys()
 
@@ -189,13 +204,17 @@ class CarTrackSelect(State):
 		self.render_arrow(WHITE, (self.track_box[1].left + (WIDTH * 0.03), self.track_box[1].top + (HEIGHT * 0.3)), 'left', self.track_index)
 		self.render_arrow(WHITE, (self.track_box[1].right - (WIDTH * 0.03), self.track_box[1].top + (HEIGHT * 0.3)), 'right', self.track_index)
 
+		# lap arrows
 		self.game.render_text('Laps', WHITE, self.game.smaller_font, (self.track_box[1].left + (WIDTH * 0.07), self.track_box[1].bottom - (HEIGHT * 0.2)))
 		self.render_arrow(WHITE, (self.track_box[1].right - (WIDTH * 0.03), self.track_box[1].bottom - (HEIGHT * 0.2 + SCALE)), 'right', self.game.total_laps)
 		self.render_arrow(WHITE, (self.track_box[1].right - (WIDTH * 0.13), self.track_box[1].bottom - (HEIGHT * 0.2 + SCALE)), 'left', self.game.total_laps)
+		self.game.render_text(self.game.total_laps, WHITE, self.game.small_font, (self.track_box[1].right - (WIDTH * 0.08), self.track_box[1].bottom - (HEIGHT * 0.2 + SCALE)))
 
+		# reverse direction arrows
 		self.game.render_text('Reversed?', WHITE, self.game.smaller_font, (self.track_box[1].left + (WIDTH * 0.1), self.track_box[1].bottom - (HEIGHT * 0.1)))
 		self.render_arrow(WHITE, (self.track_box[1].right - (WIDTH * 0.03), self.track_box[1].bottom - (HEIGHT * 0.1 + SCALE)), 'right', self.game.reverse_direction)
 		self.render_arrow(WHITE, (self.track_box[1].right - (WIDTH * 0.13), self.track_box[1].bottom - (HEIGHT * 0.1 + SCALE)), 'left', self.game.reverse_direction)
+		self.game.render_text(self.game.reverse_direction, WHITE, self.game.smaller_font, (self.track_box[1].right - (WIDTH * 0.08), self.track_box[1].bottom - (HEIGHT * 0.1 + SCALE)))
 
 		display.blit(self.fade[0], self.fade[1])
 		self.fade[0].set_alpha(self.fadeout_alpha)
