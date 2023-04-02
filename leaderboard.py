@@ -16,6 +16,8 @@ class Leaderboard(State):
 		
 		# button conditions, fade in and state
 		self.state = ''
+		self.place = 0
+		self.first_place_stats = {}
 		self.alpha = 0
 
 		# fade out surf
@@ -206,19 +208,22 @@ class Leaderboard(State):
 			self.grey_box[0].set_alpha(self.alpha)
 
 			if row < len(self.track_leaderboard) and self.alpha >= 200:
-				self.game.render_text(f'{index}   |   {name}   |   {lap}   |   {car}   |   {direction}', WHITE, self.game.even_smaller_font, (WIDTH * 0.3, (self.grey_box[0].get_height()/2) + self.scroll + start_height + HEIGHT * 0.075 * row))
+				self.game.render_text(f'{index}    |    {name}    |    {lap}    |    {car}    |    {direction}', WHITE, self.game.even_smaller_font, (WIDTH * 0.3, (self.grey_box[0].get_height()/2) + self.scroll + start_height + HEIGHT * 0.075 * row))
 			
+			# white box for player's fastest lap if entering leaderboard from name entry state
 			if self.game.player_name in self.track_leaderboard[row] and self.game.fastest_lap in self.track_leaderboard[row]:
+				self.place = row + 1
 				self.game.screen.blit(self.white_box[0], (WIDTH * 0.3 - (self.white_box[0].get_width()/2), self.scroll + start_height + HEIGHT * 0.075 * row))
-				self.game.render_text(f'{index}   |   {name}   |   {lap}   |   {car}   |   {direction}', BLACK, self.game.even_smaller_font, (WIDTH * 0.3, (self.grey_box[0].get_height()/2) + self.scroll + start_height + HEIGHT * 0.075 * row))
+				self.game.render_text(f'{index}    |    {name}    |    {lap}    |    {car}    |    {direction}', BLACK, self.game.even_smaller_font, (WIDTH * 0.3, (self.grey_box[0].get_height()/2) + self.scroll + start_height + HEIGHT * 0.075 * row))
 			
 			self.game.screen.blit(self.header_box[0], (WIDTH * 0.3 - (self.header_box[0].get_width()/2), 0))
-			pygame.draw.line(self.game.screen, BLACK, ((WIDTH * 0.3 - (self.header_box[0].get_width()/2), self.header_box[0].get_height())), ((WIDTH * 0.3 + (self.grey_box[0].get_width()/2), self.header_box[0].get_height())), SCALE//2)
-			self.game.render_text('Position  |   Name   |   Lap Time   |   Car   |    Track reversed?', BLACK, self.game.even_smaller_font, (WIDTH * 0.3, (self.header_box[0].get_height()/2)))
+			#pygame.draw.line(self.game.screen, WHITE, ((WIDTH * 0.3 - (self.header_box[0].get_width()/2), self.header_box[0].get_height())), ((WIDTH * 0.3 + (self.grey_box[0].get_width()/2), self.header_box[0].get_height())), SCALE//2)
+			self.game.render_text('Position   |    Name    |    Lap Time    |   Car    |     Track reversed?', WHITE, self.game.even_smaller_font, (WIDTH * 0.3, (self.header_box[0].get_height()/2)))
 
 			# render cups for 1st, 2nd and 3rd
 			if self.alpha >= 200:
 				if row == 0:
+					self.first_place_stats.update({'Name': name, 'Place': row, 'Lap': lap, 'Car': car, 'Direction': direction})
 					self.game.screen.blit(self.gold, (WIDTH * 0.3 - (self.grey_box[0].get_width()/2) + (4* SCALE), (self.grey_box[0].get_height()/SCALE) + self.scroll + start_height + HEIGHT * 0.075 * row))
 					self.game.screen.blit(self.gold, (WIDTH * 0.3 + (self.grey_box[0].get_width()/2) - (4* SCALE) - self.gold.get_width(), (self.grey_box[0].get_height()/SCALE) + self.scroll + start_height + HEIGHT * 0.075 * row))
 				if row == 1:
@@ -227,6 +232,7 @@ class Leaderboard(State):
 				if row == 2:
 					self.game.screen.blit(self.bronze, (WIDTH * 0.3 - (self.grey_box[0].get_width()/2) + (4* SCALE), (self.grey_box[0].get_height()/SCALE) + self.scroll + start_height + HEIGHT * 0.075 * row))
 					self.game.screen.blit(self.bronze, (WIDTH * 0.3 + (self.grey_box[0].get_width()/2) - (4* SCALE) - self.bronze.get_width(), (self.grey_box[0].get_height()/SCALE) + self.scroll + start_height + HEIGHT * 0.075 * row))
+
 
 	def update(self):
 		# change track images, needs top be in update so click action works
@@ -265,7 +271,6 @@ class Leaderboard(State):
 			self.render_arrow(WHITE, (self.track_rect.centerx + (WIDTH * 0.15), self.track_rect.centery), 'right', self.track_index)
 		
 		self.show_list_of_entries()
-		
 
 		if self.state_from == 'Name Entry':
 			self.render_button('Main Menu', WHITE, BLACK, WHITE, (self.car_sprite_box[1].centerx, HEIGHT * 0.9))
@@ -275,12 +280,21 @@ class Leaderboard(State):
 			
 			display.blit(self.car_sprite.image, self.car_sprite.pos)
 			self.car_sprite.angle += 2
+			if self.alpha >= 200:
+				self.game.render_text(f'{self.place} / {len(self.track_leaderboard)}', WHITE, self.game.smaller_font, (self.car_sprite_box[1].centerx, self.car_sprite_box[1].bottom - (HEIGHT * 0.05)))
 
 		else:
 			self.render_button('Main Menu', WHITE, BLACK, WHITE, (WIDTH * 0.8, HEIGHT * 0.9))
 
 			display.blit(self.lap_record_box[0], self.lap_record_box[1])
 			self.lap_record_box[0].set_alpha(self.alpha)
+
+			if self.alpha >= 200:
+				pygame.draw.rect(display, WHITE, ((self.lap_record_box[1].topleft), (self.lap_record_box[1].width, self.lap_record_box[1].height * 0.3)))
+				self.game.render_text('Lap Record', BLACK, self.game.smaller_font, (self.lap_record_box[1].centerx, self.lap_record_box[1].bottom - (self.lap_record_box[1].height * 0.85)))
+				self.game.render_text(self.first_place_stats['Name'], WHITE, self.game.smaller_font, (self.lap_record_box[1].centerx, self.lap_record_box[1].bottom - (self.lap_record_box[1].height * 0.6)))
+				self.game.render_text(self.first_place_stats['Lap'], WHITE, self.game.smaller_font, (self.lap_record_box[1].centerx, self.lap_record_box[1].bottom - (self.lap_record_box[1].height * 0.4)))
+				self.game.render_text(self.first_place_stats['Car'], WHITE, self.game.smaller_font, (self.lap_record_box[1].centerx, self.lap_record_box[1].bottom - (self.lap_record_box[1].height * 0.2)))
 
 
 		# fadeout and next state

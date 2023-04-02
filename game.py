@@ -48,7 +48,7 @@ class Game():
 		self.track = list(TRACK_DATA.keys())[0]
 		self.fastest_lap = None
 		self.total_laps = 1
-		self.reverse_direction = True
+		self.reverse_direction = False
 		self.car_type = list(CAR_DATA.keys())[0]
 
 		self.load_states() 
@@ -167,7 +167,7 @@ class Game():
 		return(surf, rect)
 
 	def render_text(self, text, colour, font, pos):
-		surf = font.render(str(text), True, colour)
+		surf = font.render(str(text), False, colour)
 		rect = surf.get_rect(center = pos)
 		self.screen.blit(surf, rect)
 
@@ -179,6 +179,7 @@ class Game():
 					LEADERBOARD_DATA.append(row)
 
 	def run(self):
+		print(self.stack)
 		self.clock.tick(FPS)
 		self.get_events()
 		#self.get_time()

@@ -155,7 +155,7 @@ class CarTrackSelect(State):
 		if self.fading_out:
 			self.fadeout_alpha += 255//50
 			if self.fadeout_alpha >= 255:
-				if self.state == 'Race':
+				if self.state == 'Go To Race':
 					Level(self.game, self.car_str, self.track_str).enter_state()
 
 	def render(self, display):
@@ -169,7 +169,7 @@ class CarTrackSelect(State):
 
 		self.game.render_text('Track Select', WHITE, self.game.big_font, (WIDTH * 0.3, HEIGHT * 0.2))
 		self.game.render_text('Car Select', WHITE, self.game.big_font, (WIDTH * 0.7, HEIGHT * 0.2))
-		self.render_button('Race', WHITE, BLACK, WHITE, (WIDTH * 0.7, HEIGHT * 0.825))
+		self.render_button('Go To Race', WHITE, BLACK, WHITE, (WIDTH * 0.7, HEIGHT * 0.825))
 
 		# show track
 		display.blit(self.track_surf, self.track_rect)
